@@ -5,9 +5,10 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 /**
- * ¼òµ¥½âÂëÆ÷
+ * ç®€å•è§£ç å™¨
  * @author zhangde
- * @date 2014Äê1ÔÂ9ÈÕ
+ *
+ * @date 2014å¹´1æœˆ10æ—¥
  */
 public class SimpleDecoder extends FrameDecoder{
 

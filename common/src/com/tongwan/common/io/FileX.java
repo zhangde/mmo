@@ -10,11 +10,10 @@ import java.io.PrintWriter;
 /**
  * @author zhangde
  * 
- * @date 2014Äê1ÔÂ9ÈÕ
+ * @date 2014å¹´1æœˆ10æ—¥
  */
 public class FileX {
 	/**
-	 * ¶ÁÈ¡ÎÄ±¾ÎÄ¼şµÄÈ«²¿ÄÚÈİ
 	 * @param file
 	 * @return
 	 * @throws IOException
@@ -33,7 +32,6 @@ public class FileX {
 		return sb.toString();
 	}
 	/**
-	 * ¶ÁÈ¡ÎÄ±¾ÎÄ¼şµÄÈ«²¿ÄÚÈİ
 	 * @param fileName
 	 * @return
 	 * @throws IOException
@@ -52,9 +50,8 @@ public class FileX {
 		return sb.toString();
 	}
 	/**
-	 * ´´½¨ĞÂÎÄ±¾ÎÄ¼ş
-	 * @param file ÎÄ¼şÂ·¾¶
-	 * @param fileContent ÎÄ¼şÄÚÈİ 
+	 * @param file 
+	 * @param fileContent  
 	 */
 	public static final void newFile(final String file, final String fileContent) {
 

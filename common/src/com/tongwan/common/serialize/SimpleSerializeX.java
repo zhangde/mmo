@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author zhangde
  * 
- * @date 2014Äê1ÔÂ9ÈÕ
+ * @date 2014å¹´1æœˆ10æ—¥
  */
 public class SimpleSerializeX {
 	private static byte TYPE_INT=0;

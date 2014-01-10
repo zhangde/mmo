@@ -15,6 +15,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import com.tongwan.MainJFrame;
+import com.tongwan.common.net.encoder.netty.SimpleDecoder;
 
 public class NetClient {
 	static Log log=LogFactory.getLog(NetClient.class);
@@ -27,7 +28,7 @@ public class NetClient {
 		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             public ChannelPipeline getPipeline() throws Exception {
                 ChannelPipeline pipeline = Channels.pipeline();
-                pipeline.addLast("decoder", new DefaultDecoder());
+                pipeline.addLast("decoder", new SimpleDecoder());
                 pipeline.addLast("handler", new NetClientHandler(frame));
                 return pipeline;
             }

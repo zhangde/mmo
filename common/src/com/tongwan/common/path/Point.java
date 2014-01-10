@@ -2,7 +2,7 @@ package com.tongwan.common.path;
 /**
  * 
  * @author zhangde
- * @date 2014å¹?æœ?æ—?
+ * @date 2014å¹´1æœˆ10æ—¥
  */
 public class Point {
 	public int x;
