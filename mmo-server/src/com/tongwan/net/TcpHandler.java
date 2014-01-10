@@ -20,9 +20,9 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 
-import com.tongwan.module.map.domain.GameMap;
-import com.tongwan.module.map.manage.GameMapManage;
-import com.tongwan.module.monster.domain.MonsterDomain;
+import com.tongwan.domain.map.GameMap;
+import com.tongwan.domain.monster.MonsterDomain;
+import com.tongwan.manage.GameMapManage;
 
 public class TcpHandler extends SimpleChannelHandler {
 	static Log log = LogFactory.getLog(TcpHandler.class);

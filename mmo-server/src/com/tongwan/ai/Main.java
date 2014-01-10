@@ -9,10 +9,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.ai.behaviortree.BehaviorTreeContext;
 import com.tongwan.common.io.FileX;
-import com.tongwan.module.map.domain.GameMap;
-import com.tongwan.module.map.manage.GameMapManage;
-import com.tongwan.module.monster.domain.MonsterBattle;
-import com.tongwan.module.monster.domain.MonsterDomain;
+import com.tongwan.domain.map.GameMap;
+import com.tongwan.domain.monster.MonsterBattle;
+import com.tongwan.domain.monster.MonsterDomain;
+import com.tongwan.manage.GameMapManage;
 import com.tongwan.net.TcpBootstrap;
 
 /**

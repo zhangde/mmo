@@ -68,6 +68,7 @@ public class MainJPanel extends JPanel {
 				int x=(int) m.get("x");
 				int y=(int) m.get("y");
 				g2.fillRect(x*columnSpace, y*rowSpace, columnSpace, rowSpace);
+//				g2.drawString(m.get("id").toString(), x*columnSpace, y*rowSpace);
 			}
 		}
 	}
