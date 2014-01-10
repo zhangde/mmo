@@ -6,7 +6,8 @@ import java.io.FileInputStream;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.tongwan.ai.ui.DataContext;
+import com.tongwan.common.ai.behaviortree.BehaviorTree;
+import com.tongwan.common.ai.behaviortree.BehaviorTreeContext;
 import com.tongwan.common.io.FileX;
 import com.tongwan.module.map.domain.GameMap;
 import com.tongwan.module.map.manage.GameMapManage;
@@ -25,14 +26,15 @@ public class Main {
 		File file= new File("monster.ai");
 		FileInputStream fis=new FileInputStream(file);
 		String c=FileX.readAll(file);
-		DataContext.load("monster.ai");
+		BehaviorTreeContext context=new BehaviorTreeContext();
+		context.load("monster.ai");
 		JSONObject o=(JSONObject) JSON.parse(c);
-		JSONArray oo= (JSONArray) o.get(DataContext.KEY_TREES);
+		JSONArray oo= (JSONArray) o.get(BehaviorTreeContext.KEY_TREES);
 		for(Object treeLevel:oo.toArray()){
 			JSONObject _tree=(JSONObject) treeLevel;
 //			System.out.println(treeLevel);
 			String treeName="";
-			BehaviorTree tree=new BehaviorTree(_tree);
+			BehaviorTree tree=new BehaviorTree(context,_tree);
 //			tree.load(_tree.getJSONObject("root"));
 			GameMapManage manage=new GameMapManage();
 			manage.init();
