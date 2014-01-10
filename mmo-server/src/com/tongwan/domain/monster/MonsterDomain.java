@@ -1,4 +1,4 @@
-package com.tongwan.module.monster.domain;
+package com.tongwan.domain.monster;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import com.tongwan.common.ai.behaviortree.BehaviorActor;
 import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.path.Point;
-import com.tongwan.module.map.domain.GameMap;
+import com.tongwan.domain.map.GameMap;
 import com.tongwan.net.TcpHandler;
 
 /**

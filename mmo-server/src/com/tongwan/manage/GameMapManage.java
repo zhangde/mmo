@@ -1,9 +1,9 @@
-package com.tongwan.module.map.manage;
+package com.tongwan.manage;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tongwan.module.map.domain.GameMap;
+import com.tongwan.domain.map.GameMap;
 
 public class GameMapManage {
 	private static Map<Integer, GameMap> gameMaps=new HashMap<Integer, GameMap>();

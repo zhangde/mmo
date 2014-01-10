@@ -1,4 +1,4 @@
-package com.tongwan.module.monster.domain;
+package com.tongwan.domain.monster;
 /**
  * 怪物战斗模型
  * @author zhangde

@@ -1,4 +1,4 @@
-package com.tongwan.module.map.domain;
+package com.tongwan.domain.map;
 
 import java.util.ArrayList;
 import java.util.List;
