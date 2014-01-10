@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.tongwan.ai.BehaviorActor;
-import com.tongwan.ai.BehaviorTree;
+import com.tongwan.common.ai.behaviortree.BehaviorActor;
+import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.path.Point;
 import com.tongwan.module.map.domain.GameMap;
 import com.tongwan.net.TcpHandler;
