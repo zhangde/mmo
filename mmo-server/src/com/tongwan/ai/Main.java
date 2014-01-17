@@ -31,7 +31,7 @@ public class Main {
 		FileInputStream fis=new FileInputStream(file);
 		String c=FileX.readAll(file);
 		BehaviorTreeContext context=new BehaviorTreeContext();
-		context.load("monster.ai");
+		context.load(c);
 		JSONObject o=(JSONObject) JSON.parse(c);
 		JSONArray oo= (JSONArray) o.get(BehaviorTreeContext.KEY_TREES);
 		for(Object treeLevel:oo.toArray()){

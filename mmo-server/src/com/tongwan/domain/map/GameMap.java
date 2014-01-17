@@ -1,8 +1,11 @@
 package com.tongwan.domain.map;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import com.tongwan.common.path.AStar;
 import com.tongwan.common.path.MaskTypes;
@@ -19,11 +22,32 @@ public class GameMap {
 	private int column;
 	private int rows;
 	private byte[][] data;
+	/** 地图上所有可见精灵*/
+	private Set<Spire>[] spires;
 	public GameMap(byte[][] data){
 		this.data=data;
 		this.column=data.length;
 		this.rows=data[0].length;
-		
+		spires=new Set[SpireType.values().length];
+		for(int i=0;i<spires.length;i++){
+			spires[i]=Collections.synchronizedSet(new HashSet<Spire>());
+		}
+	}
+	/**
+	 * 进入地图
+	 * @param spire
+	 */
+	public void join(Spire spire){
+		Set<Spire> typeSpire=spires[spire.getType().ordinal()];
+		typeSpire.add(spire);
+	}
+	/**
+	 * 退出地图
+	 * @param spire
+	 */
+	public void quit(Spire spire){
+		Set<Spire> typeSpire=spires[spire.getType().ordinal()];
+		typeSpire.remove(spire);
 	}
 	/**
 	 * 得到随机巡逻路径

@@ -13,6 +13,8 @@ import com.tongwan.common.ai.behaviortree.BehaviorActor;
 import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.path.Point;
 import com.tongwan.domain.map.GameMap;
+import com.tongwan.domain.map.Spire;
+import com.tongwan.domain.map.SpireType;
 import com.tongwan.helper.FightHelper;
 import com.tongwan.net.TcpHandler;
 
@@ -20,7 +22,7 @@ import com.tongwan.net.TcpHandler;
  * @author zhangde
  * @date 2013年12月25日
  */
-public class MonsterDomain implements BehaviorActor{
+public class MonsterDomain implements Spire, BehaviorActor{
 	private static Log LOG = LogFactory.getLog(MonsterDomain.class);
 	private static final AtomicLong AUTO_MONSTER_ID=new AtomicLong();
 	/** 唯一标识 */
@@ -172,6 +174,20 @@ public class MonsterDomain implements BehaviorActor{
 	}
 	public MonsterBattle getBattle() {
 		return battle;
+	}
+	/* (non-Javadoc)
+	 * @see com.tongwan.domain.map.Spire#getGameMap()
+	 */
+	@Override
+	public GameMap getGameMap() {
+		return gameMap;
+	}
+	/* (non-Javadoc)
+	 * @see com.tongwan.domain.map.Spire#getType()
+	 */
+	@Override
+	public SpireType getType() {
+		return SpireType.MONSTER;
 	}
 	
 }

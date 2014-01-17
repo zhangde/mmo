@@ -67,12 +67,12 @@ public class BehaviorTreeContext {
 		return null;
 	}
 	/**
-	 * 加载行为树描述文件
+	 * 行为树描述文件
 	 * @param path
 	 */
-	public void load(String path){
-		try {
-			String content=FileX.readAll(path);
+	public void load(String content){
+	
+//			String content=FileX.readAll(path);
 			conditions.clear();
 			actions.clear();
 			trees.clear();
@@ -111,9 +111,7 @@ public class BehaviorTreeContext {
 				trees.add(bTree);
 			}
 			System.out.println(root);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 	public String toJson(){
 		JSONObject root=new JSONObject();

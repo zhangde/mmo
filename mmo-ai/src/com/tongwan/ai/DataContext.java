@@ -166,7 +166,11 @@ public class DataContext {
 	}
 	public static void load(String path){
 		setPath(path);
-		context.load(path);
+		try {
+			context.load(FileX.readAll(path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
