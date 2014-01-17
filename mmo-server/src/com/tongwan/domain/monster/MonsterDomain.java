@@ -13,6 +13,7 @@ import com.tongwan.common.ai.behaviortree.BehaviorActor;
 import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.path.Point;
 import com.tongwan.domain.map.GameMap;
+import com.tongwan.helper.FightHelper;
 import com.tongwan.net.TcpHandler;
 
 /**
@@ -115,6 +116,7 @@ public class MonsterDomain implements BehaviorActor{
 		return true;
 	}
 	private boolean fight(){
+		FightHelper.fight(this, this);
 		return true;
 	}
 	

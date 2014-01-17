@@ -3,6 +3,9 @@ package com.tongwan.ai;
 import java.io.File;
 import java.io.FileInputStream;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -21,6 +24,7 @@ import com.tongwan.net.TcpBootstrap;
  */
 public class Main {
 	public static void main(String[] args) throws Exception{
+		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
 		AiManage aiManage = new AiManage();
 		aiManage.init();
 		File file= new File("monster.ai");

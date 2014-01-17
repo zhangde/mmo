@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="/lib/fastjson-1.1.33.jar"/>
 	<classpathentry kind="lib" path="/lib/netty-3.6.1.Final.jar"/>
+	<classpathentry kind="lib" path="/lib/poi-3.9-20121203.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/apache/poi/poi/3.9/poi-3.9-sources.jar"/>
+	<classpathentry kind="lib" path="/lib/poi-ooxml-3.9-20121203.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
