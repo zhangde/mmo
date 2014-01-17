@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="/lib/netty-3.6.1.Final.jar"/>
 	<classpathentry kind="lib" path="/lib/spring-aop-3.0.6.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/lib/spring-beans-3.0.6.RELEASE.jar"/>
-	<classpathentry kind="lib" path="/lib/spring-context-3.0.6.RELEASE.jar"/>
+	<classpathentry kind="lib" path="/lib/spring-context-3.0.6.RELEASE.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/springframework/spring-context/3.0.6.RELEASE/spring-context-3.0.6.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="/lib/spring-core-3.0.6.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/lib/spring-asm-3.0.6.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/lib/spring-expression-3.0.6.RELEASE.jar"/>

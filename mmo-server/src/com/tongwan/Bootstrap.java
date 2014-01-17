@@ -3,6 +3,7 @@ package com.tongwan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.tongwan.net.TcpBootstrap;
 import com.tongwan.service.FightService;
 
 /**
@@ -19,7 +20,8 @@ public class Bootstrap {
 		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
 		FightService fightService=  (FightService) ac.getBean(FightService.class);
 		fightService.monster2Monster(null, null);
-		
+		TcpBootstrap bootstrap=new TcpBootstrap();
+		bootstrap.start();
 	}
 
 }

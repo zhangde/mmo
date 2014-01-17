@@ -55,7 +55,6 @@ public class Main {
 		}
 		
 		
-		TcpBootstrap bootstrap=new TcpBootstrap();
-		bootstrap.start();
+		
 	}
 }

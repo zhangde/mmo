@@ -107,8 +107,13 @@ public class BehaviorTreeContext {
 			
 			
 			for(JSONObject tree:treeJsons){
+				max=0;
 				BehaviorTree bTree=new BehaviorTree(this,tree);
 				trees.add(bTree);
+				if(max<bTree.getId()){
+					max=bTree.getId();
+				}
+				BehaviorTree.setMaxId(max);
 			}
 			System.out.println(root);
 		

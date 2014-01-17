@@ -34,6 +34,9 @@ public abstract class BehaviorNode {
 	public abstract List<BehaviorNode> getChildens();
 	public abstract JSONObject toJson();
 	public abstract String toString();
+	public BehaviorTree getBehaviorTree(){
+		return this.behaviorTree;
+	}
 	/**
 	 * 根据JSON数据生成结点
 	 */
@@ -67,5 +70,28 @@ public abstract class BehaviorNode {
 			e.printStackTrace();
 		}
 		return node;
+	}
+	/**
+	 * 删除数据节点
+	 * @param child
+	 */
+	public boolean removeNode(BehaviorNode child){
+		List<BehaviorNode> childens= getChildens();
+		if(childens!=null && !childens.isEmpty()){
+			for(BehaviorNode node:childens){
+				if(node.equals(child)){
+					childens.remove(node);
+					return true;
+				}else{
+					List<BehaviorNode> childens2= node.getChildens();
+					if(childens2!=null && !childens2.isEmpty()){
+						if(node.removeNode(child)){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

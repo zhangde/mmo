@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.ai.behaviortree.BehaviorTreeContext;
+import com.tongwan.common.ai.behaviortree.node.BehaviorNode;
 import com.tongwan.common.ai.behaviortree.type.Action;
 import com.tongwan.common.ai.behaviortree.type.Condition;
 import com.tongwan.common.io.FileX;
@@ -20,14 +21,7 @@ import com.tongwan.common.io.FileX;
  * @date 2013年12月30日
  */
 public class DataContext {
-//	public static final String KEY_TREES="trees";
-//	public static final String KEY_TREES_NAME="treeName";
-//	public static final String KEY_ACTIONS="actions";
-//	public static final String KEY_CONDITIONS="conditions";
 	private static String path;
-//	private static List<Condition> conditions=new ArrayList<>();
-//	private static List<Action> actions=new ArrayList<>();
-//	private static List<BehaviorTree> trees=new ArrayList<>();
 	public static BehaviorTreeContext context=new BehaviorTreeContext();
 	/**
 	 * 添加新条件
@@ -148,6 +142,9 @@ public class DataContext {
 		}
 		context.AddTree(bTree);
 		return true;
+	}
+	public static void removeBehaviorNode(BehaviorNode node){
+		node.getBehaviorTree().removeChilden(node);
 	}
 	/**
 	 * @return the path

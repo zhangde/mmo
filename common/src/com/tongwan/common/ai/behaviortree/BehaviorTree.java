@@ -3,6 +3,7 @@ package com.tongwan.common.ai.behaviortree;
 import com.alibaba.fastjson.JSONObject;
 import com.tongwan.common.ai.behaviortree.node.BehaviorNode;
 import com.tongwan.common.ai.behaviortree.node.SelectorNode;
+import com.tongwan.common.ai.behaviortree.type.Action;
 
 /**
  * AI 行为树
@@ -10,6 +11,8 @@ import com.tongwan.common.ai.behaviortree.node.SelectorNode;
  *
  */
 public class BehaviorTree {
+	private static int maxId=1;
+	private int id;
 	/**
 	 * 名字
 	 */
@@ -23,11 +26,13 @@ public class BehaviorTree {
 	 */
 	private BehaviorTreeContext context;
 	public BehaviorTree(BehaviorTreeContext context,String name){
+		this.id=maxId++;
 		this.name=name;
 		this.context=context;
 		root=new SelectorNode(this,name);
 	}
 	public BehaviorTree(BehaviorTreeContext context,JSONObject json){
+		this.id=json.getIntValue(BehaviorNode.NODE_ID);
 		this.name=json.getString(BehaviorNode.NODE_NAME);
 		this.context=context;
 		root=new SelectorNode(this,name,json.getJSONArray(BehaviorNode.NODE_CHILDENS));
@@ -40,7 +45,12 @@ public class BehaviorTree {
 	public boolean run(BehaviorActor actor){
 		return root.executeAI(actor);
 	}
-	
+	public void removeChilden(BehaviorNode child){
+		root.removeNode(child);
+	}
+	public int getId() {
+		return id;
+	}
 	/**
 	 * @return the name
 	 */
@@ -66,7 +76,11 @@ public class BehaviorTree {
 		return  name ;
 	}
 	public JSONObject toJson(){
-		return root.toJson();
+		JSONObject json=root.toJson();
+		json.put(BehaviorNode.NODE_ID, id);
+		return json;
 	}
-	
+	public static void setMaxId(int maxId) {
+		BehaviorTree.maxId = maxId;
+	}
 }

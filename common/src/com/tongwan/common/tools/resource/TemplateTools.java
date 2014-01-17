@@ -1,5 +1,6 @@
 package com.tongwan.common.tools.resource;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,10 @@ import com.tongwan.common.lang.TypeX;
  */
 public class TemplateTools {
 	static Log LOG = LogFactory.getLog(TemplateTools.class);
-	public static List<Object> convertToTemplate(String fileName,String templatePackage){
+	public  static <T>  List<T> convertToTemplate(Class<T> clazz,String templatePath){
+		String simpleName=clazz.getSimpleName();
+		String fileName=simpleName.substring(0,simpleName.indexOf("Template"))+".xls";
+		fileName=templatePath+fileName;
 		List<List<Object>> datas=ExcelX.readXml(fileName);
 		String className=datas.remove(0).get(0).toString();//类名
 		List<Object> types=datas.remove(0); //字段类型
@@ -27,23 +31,23 @@ public class TemplateTools {
 		types.remove(0);
 		server.remove(0);
 		client.remove(0);
-			List<Object> result=new ArrayList<>();
-			String fullName=templatePackage+"."+className;
-			Class clazz=null;
-			try {
-				clazz = Class.forName(fullName);
-			} catch (ClassNotFoundException e1) {
-				LOG.error("模板类型配置错误"+fullName, e1);
-				return null;
-			}
+			List<T> result=new ArrayList<>();
+//			String fullName=templatePackage+"."+className;
+//			Class clazz=null;
+//			try {
+//				clazz = Class.forName(fullName);
+//			} catch (ClassNotFoundException e1) {
+//				LOG.error("模板类型配置错误"+fullName, e1);
+//				return null;
+//			}
 			Field[] fields=clazz.getDeclaredFields();
 			for(List<Object> data:datas){
 				data.remove(0);
-				Object item=null;
+				T item=null;
 				try {
 					item = clazz.newInstance();
 				} catch (InstantiationException | IllegalAccessException e1) {
-					LOG.error("模板类型配置错误"+fullName, e1);
+					LOG.error("模板类型配置错误"+clazz.getClass().getSimpleName(), e1);
 					return null;
 				}
 				for(Field field:fields){

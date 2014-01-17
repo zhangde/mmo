@@ -80,6 +80,8 @@ public class TreePanel extends JPanel implements TreeSelectionListener{
 		if(current.getParent()!=null){
 			DefaultTreeModel treeModel=(DefaultTreeModel) tree.getModel();
 			treeModel.removeNodeFromParent(current);
+			BehaviorNode nodeData= (BehaviorNode) current.getUserObject();
+			DataContext.removeBehaviorNode(nodeData);
 		}else{
 			JOptionPane.showMessageDialog(null, "不能删除根结点.", "错误",JOptionPane.ERROR_MESSAGE);
 		}

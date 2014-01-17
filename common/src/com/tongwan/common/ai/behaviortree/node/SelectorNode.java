@@ -26,6 +26,7 @@ public class SelectorNode extends BehaviorNode{
 	}
 	public SelectorNode(BehaviorTree behaviorTree,String name,JSONArray childensList){
 		super(behaviorTree);
+		this.name=name;
 		if(childensList!=null){
 			for(Object map:childensList){
 				childens.add(createNode((JSONObject)map));
