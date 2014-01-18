@@ -59,7 +59,7 @@ public class TypeX {
 		return type.equals("String");
 	}
 	public static boolean isArray(String type){
-		return type.equals("Array");
+		return type.equals("List");
 	}
 	public static boolean isMap(String type){
 		return type.equals("Map");

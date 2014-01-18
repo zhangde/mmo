@@ -7,11 +7,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.tongwan.common.net.ResultObject;
+
 import static com.tongwan.common.lang.TypeX.*;
 
 /**
@@ -23,10 +26,15 @@ public class ServiceG {
 		public int id;
 		public String name;
 		public PlayerVO playerVO;
+		List<PlayerBattleVO> playerBattleVOs;
 	}
 	class PlayerVO{
 		public int golden;
 		public int silver;
+	}
+	class PlayerBattleVO{
+		public int id;
+		public int level;
 	}
 	interface RpcInterface{
 		@RpcMethodTag(cmd=1,params={"name","password"},remark="登陆")
@@ -82,10 +90,6 @@ public class ServiceG {
 		l(sb,"package %s;",pg);
 		
 		l(sb,"import gen.data.*;");
-		l(sb,"import java.util.*;");
-		l(sb,"import org.jboss.netty.buffer.*;");
-		l(sb,"import org.jboss.netty.channel.*;");
-		l(sb,"import org.jboss.netty.handler.codec.http.*;");
 		l(sb,"import com.tongwan.common.net.ResultObject;");
 		l(sb,"import com.tongwan.common.net.channel.BaseChannel;");
 		l(sb,"public abstract class RpcService {");
@@ -96,7 +100,7 @@ public class ServiceG {
 		l(sb,"		switch(cmd){");
 		for(RpcMethod m:methods){
 			l(sb,"			case %s :{",m.getTag().cmd());
-			l(sb,"				_%s(channel.getChannel(),parame,callback);",m.getM().getName());
+			l(sb,"				_%s(channel,sn);",m.getM().getName());
 			l(sb,"				return;");
 			l(sb,"			}");
 		}
@@ -176,16 +180,32 @@ public class ServiceG {
 		l(sb,"package %s ;",newPk);
 		l(sb,"import java.util.*;");
 		l(sb,"import com.tongwan.common.builder.rpc.*;");
+		l(sb,"import com.tongwan.common.builder.rpc.io.*;");
 		l(sb,"public class %s implements RpcVo{",c.getSimpleName());
 		Field[] fields=c.getDeclaredFields();
+		String generics = "";
 		for(Field f:fields){
 			if(f.getName().equals("this$0")){
 				continue;
 			}
 			String t=f.getType().getSimpleName();
-			l(sb,"	public %s %s;",t,f.getName());
+			Type genericType=f.getGenericType(); 
+			if(genericType instanceof ParameterizedType){
+				ParameterizedType type = (ParameterizedType) genericType;
+			    Type[] typeArguments = type.getActualTypeArguments();
+			    for(Type typeArgument : typeArguments){
+			        Class typeArgClass = (Class) typeArgument;
+			        generics= typeArgClass.getSimpleName();
+			    }
+			}
+			if(generics!=null && !generics.equals("")){
+				l(sb,"	public %s%s %s;",t,"<"+generics+">",f.getName());
+			}else{
+				l(sb,"	public %s %s;",t,f.getName());
+			}
+			
 		}
-		l(sb,"	public void writeTo(RpcBuffer buffer){");
+		l(sb,"	public void writeTo(RpcOut buffer){");
 		for(Field f:fields){
 			String simpleName=f.getType().getSimpleName();
 			if(f.getName().equals("this$0")){
@@ -203,12 +223,52 @@ public class ServiceG {
 			}else if(isDouble(t)){
 				l(sb,"		buffer.writeDouble(%s);",f.getName());
 			}else if(isArray(t)){
-				
+				l(sb,"		buffer.writeArray(%s);",f.getName());
 			}else{
-				l(sb,"		((RpcVo)%s).writeTo(buffer);",f.getName());
+				l(sb,"		%s.writeTo(buffer);",f.getName());
 			}
 		}
 		l(sb,"		");
+		l(sb,"	}");
+		l(sb,"	public void read(RpcIn in){");
+		for(Field f:fields){
+			String simpleName=f.getType().getSimpleName();
+			if(f.getName().equals("this$0")){
+				continue;
+			}
+			String t=f.getType().getSimpleName();
+			if(isInt(t)){
+				l(sb,"		%s=in.readInt();",f.getName());
+			}else if(isLong(t)){
+				l(sb,"		%s=in.readLong();",f.getName());
+			}else if(isString(t)){
+				l(sb,"		%s=in.readString();",f.getName());
+			}else if(isBoolean(t)){
+				l(sb,"		%s=in.readBoolean();",f.getName());
+			}else if(isDouble(t)){
+				l(sb,"		%s=in.readDouble();",f.getName());
+			}else if(isArray(t)){
+				l(sb,"		int size=in.readInt();");
+				l(sb,"		%s=new ArrayList<>();",f.getName());
+				l(sb,"		for(int i=0;i<size;i++){");
+				if(isInt(t)){
+					l(sb,"			%s.add(in.readInt());",f.getName());
+				}else if(isLong(t)){
+					l(sb,"			%s.add(in.readLong());",f.getName());
+				}else if(isString(t)){
+					l(sb,"			%s.add(in.readString());",f.getName());
+				}else if(isBoolean(t)){
+					l(sb,"			%s.add(in.readBoolean());",f.getName());
+				}else if(isDouble(t)){
+					l(sb,"			%s.add(in.readDouble());",f.getName());
+				}else{
+					l(sb,"			%s.add(in.readObject(%s.class));",f.getName(),generics);
+				}
+				l(sb,"		}");
+			}else{
+				l(sb,"		%s=in.readObject(%s.class);",f.getName(),t);
+			}
+		}
 		l(sb,"	}");
 		l(sb,"}");
 		return sb.toString();
