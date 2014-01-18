@@ -40,6 +40,30 @@ public class TypeX {
 		return null;
 	}
 
+	public static boolean isInt(String type){
+		return type.equals("int") || type.equals("Integer");
+	}
+	public static boolean isLong(String type){
+		return type.equals("long") || type.equals("Long");
+	}
+	public static boolean isDouble(String type){
+		return type.equals("double") || type.equals("Double");
+	}
+	public static boolean isFloat(String type){
+		return type.equals("float") || type.equals("Float");
+	}
+	public static boolean isBoolean(String type){
+		return type.equals("boolean") || type.equals("Boolean");
+	}
+	public static boolean isString(String type){
+		return type.equals("String");
+	}
+	public static boolean isArray(String type){
+		return type.equals("Array");
+	}
+	public static boolean isMap(String type){
+		return type.equals("Map");
+	}
 	public static void main(String[] args) {
 		System.out.println(Integer.valueOf("1.0"));
 	}
