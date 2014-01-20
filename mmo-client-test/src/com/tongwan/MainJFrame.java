@@ -3,7 +3,7 @@ package com.tongwan;
 import javax.swing.JFrame;
 
 public class MainJFrame extends JFrame{
-	private MainJPanel panel; 
+	private static MainJPanel panel; 
 	public MainJFrame(){
 		super("test");
 		setSize(300, 300);
@@ -13,7 +13,7 @@ public class MainJFrame extends JFrame{
 	/**
 	 * @return the panel
 	 */
-	public MainJPanel getPanel() {
+	public static MainJPanel getPanel() {
 		return panel;
 	}
 	

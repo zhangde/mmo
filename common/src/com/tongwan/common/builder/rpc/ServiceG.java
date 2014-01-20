@@ -3,6 +3,13 @@
  */
 package com.tongwan.common.builder.rpc;
 
+import static com.tongwan.common.lang.TypeX.isBoolean;
+import static com.tongwan.common.lang.TypeX.isDouble;
+import static com.tongwan.common.lang.TypeX.isInt;
+import static com.tongwan.common.lang.TypeX.isList;
+import static com.tongwan.common.lang.TypeX.isLong;
+import static com.tongwan.common.lang.TypeX.isString;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
@@ -11,11 +18,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.tongwan.common.net.ResultObject;
-
-import static com.tongwan.common.lang.TypeX.*;
 
 /**
  * @author zhangde
@@ -60,7 +64,7 @@ public class ServiceG {
 			methods.add(new RpcMethod(m));
 		}
 		server("gen.service",methods);
-		
+		client4Java("gen.client", methods);
 		clientJavaScript("gen", methods);
 	}
 	public static void serverDataStruct(String pg,Class g) throws Exception{
@@ -92,15 +96,16 @@ public class ServiceG {
 		l(sb,"import gen.data.*;");
 		l(sb,"import com.tongwan.common.net.ResultObject;");
 		l(sb,"import com.tongwan.common.net.channel.BaseChannel;");
+		l(sb,"import com.tongwan.common.builder.rpc.io.*;");
 		l(sb,"public abstract class RpcService {");
-		l(sb,"	public void process(BaseChannel channel) throws Exception{");
+		l(sb,"	public void process(BaseChannel channel,RpcInput in) throws Exception{");
 //		l(sb,"		Map parame=channel.getParame();");
-		l(sb,"		int cmd=channel.readInt(); //指令编号");
-		l(sb,"		int sn=channel.readInt();  //指令序号");
+		l(sb,"		int cmd=in.readInt(); //指令编号");
+		l(sb,"		int sn=in.readInt();  //指令序号");
 		l(sb,"		switch(cmd){");
 		for(RpcMethod m:methods){
 			l(sb,"			case %s :{",m.getTag().cmd());
-			l(sb,"				_%s(channel,sn);",m.getM().getName());
+			l(sb,"				_%s(channel,in,sn);",m.getM().getName());
 			l(sb,"				return;");
 			l(sb,"			}");
 		}
@@ -134,6 +139,56 @@ public class ServiceG {
 			file.mkdirs();
 		}
 		File clazzFile=new File("src/"+path+"/RpcService.java");
+		if(!clazzFile.exists()){
+			clazzFile.createNewFile();
+		}
+		FileOutputStream fis=new FileOutputStream(clazzFile);
+		fis.write(sb.toString().getBytes("utf8"));
+		fis.flush();
+		fis.close();
+		System.out.println(sb);
+		
+	}
+	public static void client4Java(String pg,List<RpcMethod> methods) throws Exception{
+		StringBuffer sb=new StringBuffer();
+		l(sb,"package %s;",pg);
+		
+		l(sb,"import gen.data.*;");
+		l(sb,"import com.tongwan.common.net.ResultObject;");
+		l(sb,"import com.tongwan.common.net.channel.BaseChannel;");
+		l(sb,"import com.tongwan.common.builder.rpc.io.*;");
+		l(sb,"public abstract class RpcClient {");
+		l(sb,"	protected BaseChannel channel;");
+		l(sb,"	private int sn=0;");
+		l(sb,"	public void dispath(RpcInput in)throws Exception{");
+		l(sb,"		int cmd=in.readInt();");
+		l(sb,"		switch(cmd){");
+		for(RpcMethod m:methods){
+			l(sb,"			case %s :{",m.getTag().cmd());
+			l(sb,"				_%s(in,sn);",m.getM().getName());
+			l(sb,"				return;");
+			l(sb,"			}");
+		}
+		l(sb,"		}");
+		l(sb,"	}");
+		//请求方法
+		for(RpcMethod m:methods){
+			l(sb,m.toClient4Java());
+		}
+		//内部解析数据格式方法
+		for(RpcMethod m:methods){
+			l(sb,m.toJavaClientInner());
+		}
+		for(RpcMethod m:methods){
+			l(sb,m.toJavaClientAbstract());
+		}
+		l(sb,"}");
+		String path=pg.replaceAll("[.]","/");
+		File file=new File("src/"+path);
+		if(!file.exists()){
+			file.mkdirs();
+		}
+		File clazzFile=new File("src/"+path+"/RpcClient.java");
 		if(!clazzFile.exists()){
 			clazzFile.createNewFile();
 		}
@@ -205,7 +260,7 @@ public class ServiceG {
 			}
 			
 		}
-		l(sb,"	public void writeTo(RpcOut buffer){");
+		l(sb,"	public void writeTo(RpcOutput buffer){");
 		for(Field f:fields){
 			String simpleName=f.getType().getSimpleName();
 			if(f.getName().equals("this$0")){
@@ -222,15 +277,15 @@ public class ServiceG {
 				l(sb,"		buffer.writeBoolean(%s);",f.getName());
 			}else if(isDouble(t)){
 				l(sb,"		buffer.writeDouble(%s);",f.getName());
-			}else if(isArray(t)){
-				l(sb,"		buffer.writeArray(%s);",f.getName());
+			}else if(isList(t)){
+				l(sb,"		buffer.writeList(%s);",f.getName());
 			}else{
 				l(sb,"		%s.writeTo(buffer);",f.getName());
 			}
 		}
 		l(sb,"		");
 		l(sb,"	}");
-		l(sb,"	public void read(RpcIn in){");
+		l(sb,"	public void read(RpcInput in){");
 		for(Field f:fields){
 			String simpleName=f.getType().getSimpleName();
 			if(f.getName().equals("this$0")){
@@ -247,7 +302,7 @@ public class ServiceG {
 				l(sb,"		%s=in.readBoolean();",f.getName());
 			}else if(isDouble(t)){
 				l(sb,"		%s=in.readDouble();",f.getName());
-			}else if(isArray(t)){
+			}else if(isList(t)){
 				l(sb,"		int size=in.readInt();");
 				l(sb,"		%s=new ArrayList<>();",f.getName());
 				l(sb,"		for(int i=0;i<size;i++){");

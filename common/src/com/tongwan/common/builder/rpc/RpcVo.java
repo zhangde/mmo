@@ -1,7 +1,7 @@
 package com.tongwan.common.builder.rpc;
 
-import com.tongwan.common.builder.rpc.io.RpcIn;
-import com.tongwan.common.builder.rpc.io.RpcOut;
+import com.tongwan.common.builder.rpc.io.RpcInput;
+import com.tongwan.common.builder.rpc.io.RpcOutput;
 
 /**
  * 网络传输数据结构接口
@@ -10,6 +10,6 @@ import com.tongwan.common.builder.rpc.io.RpcOut;
  * @date 2014年1月18日
  */
 public interface RpcVo {
-	public void writeTo(RpcOut buffer);
-	public void read(RpcIn in);
+	public void writeTo(RpcOutput buffer);
+	public void read(RpcInput in);
 }

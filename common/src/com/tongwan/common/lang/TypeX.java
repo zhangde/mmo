@@ -58,7 +58,7 @@ public class TypeX {
 	public static boolean isString(String type){
 		return type.equals("String");
 	}
-	public static boolean isArray(String type){
+	public static boolean isList(String type){
 		return type.equals("List");
 	}
 	public static boolean isMap(String type){

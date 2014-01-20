@@ -194,7 +194,8 @@ public class SimpleSerializeX {
 //		map.put("xx3", 1123123l);
 //		SimpleSerializeX.writeMap(map, dos);
 //		SimpleSerializeX.writeInt(1, dos);
-		SimpleSerializeX.writeString("aaaa", dos);
+//		SimpleSerializeX.writeString("aaaa", dos);
+		SimpleSerializeX.writeInt(1, dos);
 		byte[] bytes=baos.toByteArray();
 		System.out.println();
 		for(byte b:bytes){

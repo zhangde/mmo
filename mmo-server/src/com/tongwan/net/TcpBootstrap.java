@@ -7,16 +7,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+@Component
 public class TcpBootstrap{
 	static Log log = LogFactory.getLog(TcpBootstrap.class);
-	public static void start() {
+	@Autowired
+	private TcpPipelineFactory tcpPipelineFactory;
+	public void start() {
 
 
 		ServerBootstrap tcpBootstrap = new ServerBootstrap(
 				new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
 
-		tcpBootstrap.setPipelineFactory(new TcpPipelineFactory());
+		tcpBootstrap.setPipelineFactory(tcpPipelineFactory);
 		InetSocketAddress tcp_addr = new InetSocketAddress(8888);
 		tcpBootstrap.setOption("child.tcpNoDelay", true);
 		tcpBootstrap.bind(tcp_addr);

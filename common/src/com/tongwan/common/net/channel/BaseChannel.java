@@ -1,5 +1,7 @@
 package com.tongwan.common.net.channel;
 
+import com.tongwan.common.builder.rpc.RpcVo;
+import com.tongwan.common.builder.rpc.io.RpcOutput;
 import com.tongwan.common.net.ResultObject;
 
 /**
@@ -9,7 +11,14 @@ import com.tongwan.common.net.ResultObject;
  * @date 2014年1月18日
  */
 public interface BaseChannel {
-	public int readInt();
-	public String readString();
-	public <T> void writeResultObject(ResultObject<T> resultObject);
+	/**
+	 * 客户端向服务端写数据
+	 * @param out
+	 */
+	public void writeRpcOutput(RpcOutput out);
+	/**
+	 * 服务端向客户端写数据
+	 * @param resultObject
+	 */
+	public void writeResultObject(ResultObject resultObject);
 }

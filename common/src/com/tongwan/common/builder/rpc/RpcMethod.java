@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import static com.tongwan.common.builder.rpc.ServiceG.l;
 import static com.tongwan.common.builder.rpc.ServiceG.a;
+import static com.tongwan.common.lang.TypeX.*;
 /**
  * @author zhangde
  * @date 2013-9-25
@@ -49,9 +50,65 @@ public class RpcMethod {
 		}
 		return "";
 	}
+	public String getReturnType2(){
+		Type returnType=m.getGenericReturnType();
+		if(returnType instanceof ParameterizedType){
+			ParameterizedType type = (ParameterizedType) returnType;
+		    Type[] typeArguments = type.getActualTypeArguments();
+		    for(Type typeArgument : typeArguments){
+		        Class typeArgClass = (Class) typeArgument;
+		        return typeArgClass.getSimpleName();
+		    }
+		}
+		return "";
+	}
+	public String toClient4Java(){
+		StringBuffer sb=new StringBuffer();
+		sb.append("	public  void ").append(m.getName()).append("(");
+		for(int i=0;i<parameterTypes.length;i++){
+			String t=parameterTypes[i].toString();
+			t=t.substring(t.lastIndexOf(".")+1);
+			if(t.indexOf("$")!=-1){
+				t=t.substring(t.indexOf("$")+1,t.length());
+			}
+			String pName=tag.params()[i];
+			sb.append(t).append(" ").append(pName).append(",");
+		}
+		if(parameterTypes.length>0){
+			sb.delete(sb.length()-1, sb.length());
+		}
+		sb.append(") throws Exception{\r\n");
+		l(sb,"		RpcOutput buffer=new RpcOutput();");
+		l(sb,"		buffer.writeInt(%s);",getTag().cmd());
+		l(sb,"		buffer.writeInt(sn++);");
+		for(int i=0;i<parameterTypes.length;i++){
+			String t=parameterTypes[i].toString();
+			t=t.substring(t.lastIndexOf(".")+1);
+			if(t.indexOf("$")!=-1){
+				t=t.substring(t.indexOf("$")+1,t.length());
+			}
+			String pName=tag.params()[i];
+//			sb.append(t).append(" ").append(pName).append(",");
+			if(isInt(t)){
+				l(sb,"		buffer.writeInt(%s);",pName);
+			}else if(isLong(t)){
+				l(sb,"		buffer.writeLong(%s);",pName);
+			}else if(isString(t)){
+				l(sb,"		buffer.writeString(%s);",pName);
+			}else if(isBoolean(t)){
+				l(sb,"		buffer.writeBoolean(%s);",pName);
+			}else if(isDouble(t)){
+				l(sb,"		buffer.writeDouble(%s);",pName);
+			}
+		}
+		l(sb,"		channel.writeRpcOutput(buffer);");
+		sb.append("	}");
+		return sb.toString();
+	}
+	
 	public String toInner(){
 		StringBuffer sb=new StringBuffer();
-		sb.append("	public void _").append(m.getName()).append("(BaseChannel channel,int sn) throws Exception{\r\n");
+		sb.append("	public void _").append(m.getName()).append("(BaseChannel channel,RpcInput in,int sn) throws Exception{\r\n");
 		for(int i=0;i<parameterAnnotations.length;i++){
 			Annotation[] a=parameterAnnotations[i];
 			if(a.length>0){
@@ -62,9 +119,9 @@ public class RpcMethod {
 			String pName=tag.params()[i];
 			
 			if(t.equals("int") || t.equals("Integer")){
-				l(sb,"		%s %s=channel.readInt();",t,pName);
+				l(sb,"		%s %s=in.readInt();",t,pName);
 			}else{
-				l(sb,"		%s %s=channel.readString();",t,pName);
+				l(sb,"		%s %s=in.readString();",t,pName);
 			}
 		}
 		for(int i=0;i<parameterAnnotations.length;i++){
@@ -88,27 +145,34 @@ public class RpcMethod {
 				sb.append(s).append(",");
 			}
 			sb.delete(sb.length()-1, sb.length());
-			sb.append(");\r\n");
+			
 		}
+		sb.append(");\r\n");
+		l(sb,"		result.setCmd(%s);",getTag().cmd());
 		l(sb,"		channel.writeResultObject(result);");
-//		sb.append("		Map returnMap = new HashMap();\r\n");
-//		for(int i=0;i<parameterAnnotations.length;i++){
-//			Annotation[] a=parameterAnnotations[i];
-//			if(a.length>0){
-//				String t=parameterTypes[i].toString();
-//				t=t.substring(t.lastIndexOf(".")+1);
-//				String pName=tag.params()[i];
-//				if(parameterTypes[i].equals(HashMap.class) || parameterTypes[i].equals(ArrayList.class)){
-//					sb.append("		returnMap.put(\"").append(pName).append("\","+pName+");").append("\r\n");
-//				}else{
-//					sb.append("		returnMap.put(\"").append(pName).append("\","+pName+".toMap());").append("\r\n");
-//				}
-//				
-//				
-//			}
-//		}
-//		sb.append("		writeJson(channel,returnMap,callback);\r\n");
 		sb.append("	}");
+		return sb.toString();
+	}
+	public String toJavaClientInner(){
+		String returnType=getReturnType2();
+		StringBuffer sb=new StringBuffer();
+		sb.append("	private void _").append(m.getName()).append("(RpcInput in,int sn) throws Exception{\r\n");
+		l(sb,"		int state=in.readInt();");
+		if(returnType.equals("byte[][]")){
+			l(sb,"		byte[][] result=in.readByteArray2();");
+			
+		}else{
+			l(sb,"		%s result=new %s();",returnType,returnType);
+			l(sb,"		result.read(in);");
+		}
+		
+		l(sb,"		%sCallback(state,result);",m.getName());
+		sb.append("	}");
+		return sb.toString();
+	}
+	public String toJavaClientAbstract(){
+		StringBuffer sb=new StringBuffer();
+		l(sb,"	public abstract void %sCallback(int state,%s result)throws Exception;",m.getName(),getReturnType2());
 		return sb.toString();
 	}
 	public String toAbstract(){
@@ -123,7 +187,9 @@ public class RpcMethod {
 			String pName=tag.params()[i];
 			sb.append(t).append(" ").append(pName).append(",");
 		}
-		sb.delete(sb.length()-1, sb.length());
+		if(parameterTypes.length>0){
+			sb.delete(sb.length()-1, sb.length());
+		}
 		sb.append(") throws Exception;");
 		return sb.toString();
 	}

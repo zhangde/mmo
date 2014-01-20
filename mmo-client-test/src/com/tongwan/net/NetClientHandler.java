@@ -1,9 +1,9 @@
 package com.tongwan.net;
 
 
-import java.io.ByteArrayInputStream;
+import gen.client.RpcClient;
+
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,18 +19,20 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 import com.tongwan.MainJFrame;
 import com.tongwan.MainJPanel;
+import com.tongwan.common.builder.rpc.io.RpcInput;
+import com.tongwan.common.net.channel.netty.NettyChannelImpl;
 
 
 public class NetClientHandler extends SimpleChannelUpstreamHandler{
 	static Log log=LogFactory.getLog(NetClientHandler.class);
 	static ScheduledExecutorService service=Executors.newSingleThreadScheduledExecutor();
 	private MainJFrame frame;
+	private RpcClient client;
 	public NetClientHandler(MainJFrame frame){
 		super();
 		this.frame=frame;
@@ -38,7 +40,8 @@ public class NetClientHandler extends SimpleChannelUpstreamHandler{
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx,final ChannelStateEvent e) throws Exception {
 		log.debug("server connect!");
-		requestGameMap(ctx.getChannel());
+		client=new RpcClientImpl(new NettyChannelImpl(e.getChannel()));
+		client.loadGameMap();
 	}
 	
 	
@@ -68,11 +71,12 @@ public class NetClientHandler extends SimpleChannelUpstreamHandler{
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
 		log.debug("messageReceived");
 		byte[] content=(byte[]) e.getMessage();
-		ByteArrayInputStream bais=new ByteArrayInputStream(content);
-		ObjectInputStream ois=new ObjectInputStream(bais);
-		int cmd=ois.readInt();
-		Map map = (Map) ois.readObject();
-		dispath(ctx.getChannel(), cmd, map);
+		client.dispath(new RpcInput(content));
+//		ByteArrayInputStream bais=new ByteArrayInputStream(content);
+//		ObjectInputStream ois=new ObjectInputStream(bais);
+//		int cmd=ois.readInt();
+//		Map map = (Map) ois.readObject();
+//		dispath(ctx.getChannel(), cmd, map);
 	}
 	private void dispath(Channel channel,int cmd,Map map){
 		switch (cmd) {

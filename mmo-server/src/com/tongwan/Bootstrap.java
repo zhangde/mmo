@@ -18,9 +18,9 @@ public class Bootstrap {
 	 */
 	public static void main(String[] args) {
 		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
-		FightService fightService=  (FightService) ac.getBean(FightService.class);
-		fightService.monster2Monster(null, null);
-		TcpBootstrap bootstrap=new TcpBootstrap();
+//		FightService fightService=  (FightService) ac.getBean(FightService.class);
+//		fightService.monster2Monster(null, null);
+		TcpBootstrap bootstrap=ac.getBean(TcpBootstrap.class);
 		bootstrap.start();
 	}
 

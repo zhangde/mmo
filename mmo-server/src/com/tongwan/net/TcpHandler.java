@@ -1,5 +1,7 @@
 package com.tongwan.net;
 
+import gen.service.RpcService;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -19,70 +21,32 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import com.tongwan.common.builder.rpc.io.RpcInput;
+import com.tongwan.common.net.channel.netty.NettyChannelImpl;
 import com.tongwan.domain.map.GameMap;
 import com.tongwan.domain.monster.MonsterDomain;
 import com.tongwan.manage.GameMapManage;
-
+@Component
 public class TcpHandler extends SimpleChannelHandler {
 	static Log log = LogFactory.getLog(TcpHandler.class);
 	public static final ChannelGroup group =new DefaultChannelGroup();
+	@Autowired
+	private RpcService service;
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx,final MessageEvent e) throws Exception {
 		log.debug("messageReceived");
-		byte[] content=(byte[]) e.getMessage();
-		ByteArrayInputStream bais=new ByteArrayInputStream(content);
-		ObjectInputStream ois=new ObjectInputStream(bais);
-		int cmd=ois.readInt();
-		Map map = (Map) ois.readObject();
-		dispath(ctx.getChannel(), cmd, map);
+		service.process(new NettyChannelImpl(e.getChannel()), new RpcInput((byte[])e.getMessage()));
+//		byte[] content=(byte[]) e.getMessage();
+//		ByteArrayInputStream bais=new ByteArrayInputStream(content);
+//		ObjectInputStream ois=new ObjectInputStream(bais);
+//		int cmd=ois.readInt();
+//		Map map = (Map) ois.readObject();
+//		dispath(ctx.getChannel(), cmd, map);
 	}
-	private void dispath(Channel channel,int cmd,Map map){
-		switch (cmd) {
-		case 1:
-			requestGameMap(channel);
-			break;
-
-		default:
-			break;
-		}
-	}
-	private void requestGameMap(Channel channel){
-		GameMap gameMap=GameMapManage.getById(1);
-		Map map=new HashMap<>();
-		map.put("data", gameMap.getData());
-		channel.write(toChannelBuffer(1, map));
-	}
-	public static void pushAddSprite(MonsterDomain monsterDomain){
-		Iterator<Channel> iterators=group.iterator();
-		while(iterators.hasNext()){
-			Channel channel=iterators.next();
-			Map map=new HashMap<>();
-			map.put("id", monsterDomain.getId());
-			map.put("x", monsterDomain.getX());
-			map.put("y", monsterDomain.getY());
-			channel.write(toChannelBuffer(2, map));
-		}
-	}
-	private static  ChannelBuffer toChannelBuffer(int cmd,Map parame){
-		ByteArrayOutputStream baos=new ByteArrayOutputStream();
-		
-		int length=0;
-		try{
-			ObjectOutputStream oos=new ObjectOutputStream(baos);
-			oos.writeInt(cmd);
-			oos.writeObject(parame);
-			byte[] bytes=baos.toByteArray();
-			ChannelBuffer cb=ChannelBuffers.buffer(4+bytes.length);
-			cb.writeInt(bytes.length);
-			cb.writeBytes(bytes);
-			return cb;
-		}catch(Exception e){
-			log.error("",e);
-		}
-		return null;
-		
-	}
+	
 	@Override
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
