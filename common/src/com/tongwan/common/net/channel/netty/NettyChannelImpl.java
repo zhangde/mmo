@@ -4,7 +4,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 
-import com.tongwan.common.builder.rpc.RpcVo;
 import com.tongwan.common.builder.rpc.io.RpcOutput;
 import com.tongwan.common.net.ResultObject;
 import com.tongwan.common.net.channel.BaseChannel;
@@ -41,6 +40,28 @@ public class NettyChannelImpl implements BaseChannel {
 		buffer.writeInt(bytes.length);
 		buffer.writeBytes(bytes);
 		channel.write(buffer);
+	}
+
+	
+	@Override
+	public void setAttachment(Object attachment) {
+		channel.setAttachment(attachment);
+	}
+
+	@Override
+	public Object getAttachment() {
+		return channel.getAttachment();
+	}
+
+	@Override
+	public int getId() {
+		return channel.getId();
+	}
+
+	
+	@Override
+	public void close() {
+		channel.close();
 	}
 
 }
