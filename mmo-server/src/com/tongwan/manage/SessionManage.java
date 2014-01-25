@@ -1,10 +1,13 @@
 package com.tongwan.manage;
 
+import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.tongwan.common.net.ResultObject;
 import com.tongwan.common.net.channel.BaseChannel;
 
 /**
@@ -65,5 +68,35 @@ public class SessionManage {
 	 */
 	public boolean isOnline(long playerId){
 		return ONLINE_CHANNELS.contains(playerId);
+	}
+	/**
+	 * 向所有已登陆客户端发送数据
+	 * @param resultObject
+	 */
+	public <T> void writeToAllOnline(ResultObject<T> resultObject){
+		for(Entry<Long, BaseChannel> entry:ONLINE_CHANNELS.entrySet()){
+			BaseChannel channel=entry.getValue();
+			channel.writeResultObject(resultObject);
+		}
+	}
+	/**
+	 * 向指定已登陆玩家发送数据
+	 * @param playerIds
+	 * @param resultObject
+	 */
+	public <T> void writeTo(Collection<Long> playerIds,ResultObject<T> resultObject){
+		for(long id:playerIds){
+			BaseChannel channel=ONLINE_CHANNELS.get(id);
+			channel.writeResultObject(resultObject);
+		}
+	}
+	/**
+	 * 向指定已登陆玩家发送数据
+	 * @param playerIds
+	 * @param resultObject
+	 */
+	public <T> void writeTo(Long playerId,ResultObject<T> resultObject){
+		BaseChannel channel=ONLINE_CHANNELS.get(playerId);
+		channel.writeResultObject(resultObject);
 	}
 }
