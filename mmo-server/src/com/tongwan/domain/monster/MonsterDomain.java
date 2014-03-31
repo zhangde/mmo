@@ -13,7 +13,7 @@ import com.tongwan.common.ai.behaviortree.BehaviorActor;
 import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.path.Point;
 import com.tongwan.domain.map.GameMap;
-import com.tongwan.domain.map.Spire;
+import com.tongwan.domain.map.Sprite;
 import com.tongwan.domain.map.SpireType;
 import com.tongwan.helper.FightHelper;
 import com.tongwan.net.TcpHandler;
@@ -22,7 +22,7 @@ import com.tongwan.net.TcpHandler;
  * @author zhangde
  * @date 2013年12月25日
  */
-public class MonsterDomain implements Spire, BehaviorActor{
+public class MonsterDomain implements Sprite, BehaviorActor{
 	private static Log LOG = LogFactory.getLog(MonsterDomain.class);
 	private static final AtomicLong AUTO_MONSTER_ID=new AtomicLong();
 	/** 唯一标识 */
@@ -83,10 +83,11 @@ public class MonsterDomain implements Spire, BehaviorActor{
 	 */
 	private boolean patrol(){
 		if(currentPath==null || currentPath.isEmpty()){
-			if(System.currentTimeMillis() - lastMoveTime >= 00){
+			if(System.currentTimeMillis() - lastMoveTime >= 200){
 				currentPath=gameMap.randomPoint(x, y, patrolRadius);
 				if(currentPath!=null && !currentPath.isEmpty()){
 					lastMoveTime=System.currentTimeMillis();
+					LOG.debug("["+id+"]开始移动");
 					return true;
 				}
 			}
@@ -104,7 +105,7 @@ public class MonsterDomain implements Spire, BehaviorActor{
 				if(gameMap.isPathPass(point.x, point.y)){
 					this.x=point.x;
 					this.y=point.y;
-					//Log.debug("["+this.id+"]移动到:("+x+","+y+")");
+					LOG.debug("["+this.id+"]移动到:("+x+","+y+")");
 					//TcpHandler.pushAddSprite(this);
 					return true;
 				}else{
@@ -175,16 +176,10 @@ public class MonsterDomain implements Spire, BehaviorActor{
 	public MonsterBattle getBattle() {
 		return battle;
 	}
-	/* (non-Javadoc)
-	 * @see com.tongwan.domain.map.Spire#getGameMap()
-	 */
 	@Override
 	public GameMap getGameMap() {
 		return gameMap;
 	}
-	/* (non-Javadoc)
-	 * @see com.tongwan.domain.map.Spire#getType()
-	 */
 	@Override
 	public SpireType getType() {
 		return SpireType.MONSTER;

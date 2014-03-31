@@ -10,8 +10,8 @@ public abstract class RpcClient {
 	public void dispath(RpcInput in)throws Exception{
 		int cmd=in.readInt();
 		switch(cmd){
-			case 2 :{
-				_pushSpriteChange(in,sn);
+			case 1 :{
+				_login(in,sn);
 				return;
 			}
 			case 4 :{
@@ -22,16 +22,18 @@ public abstract class RpcClient {
 				_loadGameMap(in,sn);
 				return;
 			}
-			case 1 :{
-				_login(in,sn);
+			case 2 :{
+				_pushSpriteAdd(in,sn);
 				return;
 			}
 		}
 	}
-	public  void pushSpriteChange() throws Exception{
+	public  void login(String name,String password) throws Exception{
 		RpcOutput buffer=new RpcOutputNettyImpl();
-		buffer.writeInt(2);
+		buffer.writeInt(1);
 		buffer.writeInt(sn++);
+		buffer.writeString(name);
+		buffer.writeString(password);
 		channel.writeRpcOutput(buffer);
 	}
 	public  void closeUser(String name) throws Exception{
@@ -47,19 +49,17 @@ public abstract class RpcClient {
 		buffer.writeInt(sn++);
 		channel.writeRpcOutput(buffer);
 	}
-	public  void login(String name,String password) throws Exception{
+	public  void pushSpriteAdd() throws Exception{
 		RpcOutput buffer=new RpcOutputNettyImpl();
-		buffer.writeInt(1);
+		buffer.writeInt(2);
 		buffer.writeInt(sn++);
-		buffer.writeString(name);
-		buffer.writeString(password);
 		channel.writeRpcOutput(buffer);
 	}
-	private void _pushSpriteChange(RpcInput in,int sn) throws Exception{
+	private void _login(RpcInput in,int sn) throws Exception{
 		int state=in.readInt();
-		SpriteVO result=new SpriteVO();
+		UserVO result=new UserVO();
 		result.read(in);
-		pushSpriteChangeCallback(state,result);
+		loginCallback(state,result);
 	}
 	private void _closeUser(RpcInput in,int sn) throws Exception{
 		int state=in.readInt();
@@ -72,18 +72,18 @@ public abstract class RpcClient {
 		byte[][] result=in.readByteArray2();
 		loadGameMapCallback(state,result);
 	}
-	private void _login(RpcInput in,int sn) throws Exception{
+	private void _pushSpriteAdd(RpcInput in,int sn) throws Exception{
 		int state=in.readInt();
-		UserVO result=new UserVO();
+		SpriteVO result=new SpriteVO();
 		result.read(in);
-		loginCallback(state,result);
+		pushSpriteAddCallback(state,result);
 	}
-	public abstract void pushSpriteChangeCallback(int state,SpriteVO result)throws Exception;
+	public abstract void loginCallback(int state,UserVO result)throws Exception;
 
 	public abstract void closeUserCallback(int state,UserVO result)throws Exception;
 
 	public abstract void loadGameMapCallback(int state,byte[][] result)throws Exception;
 
-	public abstract void loginCallback(int state,UserVO result)throws Exception;
+	public abstract void pushSpriteAddCallback(int state,SpriteVO result)throws Exception;
 
 }

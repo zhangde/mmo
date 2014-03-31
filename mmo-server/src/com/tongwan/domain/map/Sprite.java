@@ -6,7 +6,8 @@ package com.tongwan.domain.map;
  *
  * @date 2014年1月17日
  */
-public interface Spire {
+public interface Sprite {
+	public long getId();
 	public int getX();
 	public int getY();
 	public GameMap getGameMap();

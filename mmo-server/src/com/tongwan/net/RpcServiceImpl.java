@@ -1,10 +1,14 @@
 package com.tongwan.net;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.tongwan.common.net.ResultObject;
 import com.tongwan.domain.map.GameMap;
+import com.tongwan.domain.map.Sprite;
+import com.tongwan.helper.PushHelper;
 import com.tongwan.service.GameMapService;
 
 import gen.data.SpriteVO;
@@ -34,6 +38,17 @@ public class RpcServiceImpl extends RpcService{
 		GameMap map=gameMapService.getGameMap(1);
 		ResultObject<byte[][]> result=new ResultObject<>();
 		result.setValue(map.getData());
+		
+		Set<Sprite> monsterSet=map.getAllMonster();
+		for(Sprite s:monsterSet){
+			SpriteVO v=new SpriteVO();
+			v.id=s.getId();
+			v.x=s.getX();
+			v.y=s.getY();
+			ResultObject r=ResultObject.valueOf(2);
+			r.setValue(v);
+			PushHelper.push(r);
+		}
 		return result;
 	}
 
@@ -47,8 +62,10 @@ public class RpcServiceImpl extends RpcService{
 		return null;
 	}
 
+
+
 	@Override
-	public ResultObject<SpriteVO> pushSpriteChange() throws Exception {
+	public ResultObject<SpriteVO> pushSpriteAdd() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

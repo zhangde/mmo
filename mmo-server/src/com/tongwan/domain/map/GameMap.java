@@ -23,31 +23,38 @@ public class GameMap {
 	private int rows;
 	private byte[][] data;
 	/** 地图上所有可见精灵*/
-	private Set<Spire>[] spires;
+	private Set<Sprite>[] spires;
 	public GameMap(byte[][] data){
 		this.data=data;
 		this.column=data.length;
 		this.rows=data[0].length;
 		spires=new Set[SpireType.values().length];
 		for(int i=0;i<spires.length;i++){
-			spires[i]=Collections.synchronizedSet(new HashSet<Spire>());
+			spires[i]=Collections.synchronizedSet(new HashSet<Sprite>());
 		}
 	}
 	/**
 	 * 进入地图
 	 * @param spire
 	 */
-	public void join(Spire spire){
-		Set<Spire> typeSpire=spires[spire.getType().ordinal()];
+	public void join(Sprite spire){
+		Set<Sprite> typeSpire=spires[spire.getType().ordinal()];
 		typeSpire.add(spire);
 	}
 	/**
 	 * 退出地图
 	 * @param spire
 	 */
-	public void quit(Spire spire){
-		Set<Spire> typeSpire=spires[spire.getType().ordinal()];
+	public void quit(Sprite spire){
+		Set<Sprite> typeSpire=spires[spire.getType().ordinal()];
 		typeSpire.remove(spire);
+	}
+	/**
+	 * 获得当前地图的所有怪物
+	 * @return
+	 */
+	public Set<Sprite> getAllMonster(){
+		return spires[SpireType.MONSTER.ordinal()];
 	}
 	/**
 	 * 得到随机巡逻路径

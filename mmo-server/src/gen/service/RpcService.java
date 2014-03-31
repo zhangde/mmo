@@ -8,8 +8,8 @@ public abstract class RpcService {
 		int cmd=in.readInt(); //指令编号
 		int sn=in.readInt();  //指令序号
 		switch(cmd){
-			case 2 :{
-				_pushSpriteChange(channel,in,sn);
+			case 1 :{
+				_login(channel,in,sn);
 				return;
 			}
 			case 4 :{
@@ -20,16 +20,18 @@ public abstract class RpcService {
 				_loadGameMap(channel,in,sn);
 				return;
 			}
-			case 1 :{
-				_login(channel,in,sn);
+			case 2 :{
+				_pushSpriteAdd(channel,in,sn);
 				return;
 			}
 		}
 		throw new RuntimeException(" cmd: " + cmd + " not found processor.");
 	}
-	public void _pushSpriteChange(BaseChannel channel,RpcInput in,int sn) throws Exception{
-		ResultObject<SpriteVO> result=pushSpriteChange();
-		result.setCmd(2);
+	public void _login(BaseChannel channel,RpcInput in,int sn) throws Exception{
+		String name=in.readString();
+		String password=in.readString();
+		ResultObject<UserVO> result=login(name,password);
+		result.setCmd(1);
 		channel.writeResultObject(result);
 	}
 	public void _closeUser(BaseChannel channel,RpcInput in,int sn) throws Exception{
@@ -43,15 +45,13 @@ public abstract class RpcService {
 		result.setCmd(3);
 		channel.writeResultObject(result);
 	}
-	public void _login(BaseChannel channel,RpcInput in,int sn) throws Exception{
-		String name=in.readString();
-		String password=in.readString();
-		ResultObject<UserVO> result=login(name,password);
-		result.setCmd(1);
+	public void _pushSpriteAdd(BaseChannel channel,RpcInput in,int sn) throws Exception{
+		ResultObject<SpriteVO> result=pushSpriteAdd();
+		result.setCmd(2);
 		channel.writeResultObject(result);
 	}
-	public abstract ResultObject<SpriteVO> pushSpriteChange() throws Exception;
+	public abstract ResultObject<UserVO> login(String name,String password) throws Exception;
 	public abstract ResultObject<UserVO> closeUser(String name) throws Exception;
 	public abstract ResultObject<byte[][]> loadGameMap() throws Exception;
-	public abstract ResultObject<UserVO> login(String name,String password) throws Exception;
+	public abstract ResultObject<SpriteVO> pushSpriteAdd() throws Exception;
 }

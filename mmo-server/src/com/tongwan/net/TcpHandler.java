@@ -16,12 +16,15 @@ import org.springframework.stereotype.Component;
 import com.tongwan.common.io.rpc.RpcInput;
 import com.tongwan.common.io.rpc.impl.RpcInputNettyImpl;
 import com.tongwan.common.net.channel.netty.NettyChannelImpl;
+import com.tongwan.manage.SessionManage;
 @Component
 public class TcpHandler extends SimpleChannelHandler {
 	static Log log = LogFactory.getLog(TcpHandler.class);
 	public static final ChannelGroup group =new DefaultChannelGroup();
 	@Autowired
 	private RpcService service;
+	@Autowired
+	private SessionManage sessionManage;
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx,final MessageEvent e) throws Exception {
 		log.debug("messageReceived");
@@ -38,6 +41,8 @@ public class TcpHandler extends SimpleChannelHandler {
 			throws Exception {
 		log.debug("channelConnected");
 		group.add(ctx.getChannel());
+		sessionManage.putToOnlineList(1, new NettyChannelImpl(e.getChannel()));
+		
 	}
 	
 }

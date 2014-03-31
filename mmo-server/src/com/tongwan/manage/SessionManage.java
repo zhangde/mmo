@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 
 import com.tongwan.common.net.ResultObject;
 import com.tongwan.common.net.channel.BaseChannel;
@@ -16,6 +17,7 @@ import com.tongwan.common.net.channel.BaseChannel;
  *
  * @date 2014年1月25日
  */
+@Component
 public class SessionManage {
 	static Log LOG=LogFactory.getLog(SessionManage.class);
 	/** 匿名连接 未登陆用户*/
