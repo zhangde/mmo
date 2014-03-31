@@ -5,6 +5,7 @@ import static com.tongwan.common.io.rpc.MessageType.TYPE_BOOLEAN_TRUE;
 import static com.tongwan.common.io.rpc.MessageType.TYPE_NULL;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -22,9 +23,12 @@ import com.tongwan.common.io.rpc.RpcVo;
 public class RpcOutputNettyImpl implements RpcOutput{
 	private ChannelBuffer buffer;
 	public RpcOutputNettyImpl(){
-		buffer=ChannelBuffers.dynamicBuffer();
+		buffer=ChannelBuffers.dynamicBuffer(ByteOrder.LITTLE_ENDIAN, 1024);
 	}
 	public void writeObject(Object o){
+		if(o==null){
+			return;
+		}
 		if(o instanceof Integer){
 			writeInt((int)o);
 		}else if(o instanceof String){
@@ -119,6 +123,9 @@ public class RpcOutputNettyImpl implements RpcOutput{
 	}
 	
 	public byte[] toByteArray(){
-		return buffer.array();
+		int offset=buffer.writableBytes();
+		byte[] bytes=new byte[offset];
+		buffer.readBytes(bytes);
+		return bytes;
 	}
 }

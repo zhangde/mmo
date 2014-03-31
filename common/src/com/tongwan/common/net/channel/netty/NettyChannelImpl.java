@@ -1,5 +1,7 @@
 package com.tongwan.common.net.channel.netty;
 
+import java.nio.ByteOrder;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -37,7 +39,8 @@ public class NettyChannelImpl implements BaseChannel {
 		out.writeObject(resultObject.getValue());
 		
 		byte[] bytes=out.toByteArray();
-		ChannelBuffer buffer=ChannelBuffers.buffer(4+bytes.length);
+		
+		ChannelBuffer buffer= ChannelBuffers.buffer(ByteOrder.LITTLE_ENDIAN, 4+bytes.length);
 		buffer.writeInt(bytes.length);
 		buffer.writeBytes(bytes);
 		channel.write(buffer);
