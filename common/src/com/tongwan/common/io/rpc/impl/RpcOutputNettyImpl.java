@@ -1,12 +1,14 @@
-package com.tongwan.common.builder.rpc.io;
+package com.tongwan.common.io.rpc.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import com.tongwan.common.builder.rpc.RpcVo;
-import static com.tongwan.common.builder.rpc.io.MessageType.*;
+import com.tongwan.common.io.rpc.RpcVo;
+
+import static com.tongwan.common.io.rpc.MessageType.*;
+
 import com.tongwan.common.serialize.SimpleSerializeX;
 
 /**
@@ -15,10 +17,10 @@ import com.tongwan.common.serialize.SimpleSerializeX;
  *
  * @date 2014年1月18日
  */
-public class RpcOutput {
+public class RpcOutputNettyImpl {
 	private ByteArrayOutputStream baos;
 	private DataOutputStream os;
-	public RpcOutput(){
+	public RpcOutputNettyImpl(){
 		baos=new ByteArrayOutputStream();
 		os=new DataOutputStream(baos);
 	}

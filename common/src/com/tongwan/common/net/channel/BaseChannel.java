@@ -1,7 +1,7 @@
 package com.tongwan.common.net.channel;
 
-import com.tongwan.common.builder.rpc.RpcVo;
-import com.tongwan.common.builder.rpc.io.RpcOutput;
+import com.tongwan.common.io.rpc.RpcVo;
+import com.tongwan.common.io.rpc.impl.RpcOutputNettyImpl;
 import com.tongwan.common.net.ResultObject;
 
 /**
@@ -15,7 +15,7 @@ public interface BaseChannel {
 	 * 客户端向服务端写数据
 	 * @param out
 	 */
-	public void writeRpcOutput(RpcOutput out);
+	public void writeRpcOutput(RpcOutputNettyImpl out);
 	/**
 	 * 服务端向客户端写数据
 	 * @param resultObject

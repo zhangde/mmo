@@ -1,4 +1,4 @@
-package com.tongwan.common.builder.rpc.io;
+package com.tongwan.common.io.rpc.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,8 +9,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tongwan.common.builder.rpc.RpcVo;
-import static com.tongwan.common.builder.rpc.io.MessageType.*;
+import com.tongwan.common.io.rpc.RpcVo;
+
+import static com.tongwan.common.io.rpc.MessageType.*;
 
 /**
  * 网络数据包输入缓冲区
