@@ -24,7 +24,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 import com.tongwan.MainJFrame;
 import com.tongwan.MainJPanel;
-import com.tongwan.common.builder.rpc.io.RpcInput;
+import com.tongwan.common.io.rpc.impl.RpcInputNettyImpl;
 import com.tongwan.common.net.channel.netty.NettyChannelImpl;
 
 
@@ -71,7 +71,7 @@ public class NetClientHandler extends SimpleChannelUpstreamHandler{
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
 		log.debug("messageReceived");
 		byte[] content=(byte[]) e.getMessage();
-		client.dispath(new RpcInput(content));
+		client.dispath(new RpcInputNettyImpl(content));
 //		ByteArrayInputStream bais=new ByteArrayInputStream(content);
 //		ObjectInputStream ois=new ObjectInputStream(bais);
 //		int cmd=ois.readInt();

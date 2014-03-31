@@ -4,6 +4,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 
+import com.tongwan.common.io.rpc.RpcOutput;
 import com.tongwan.common.io.rpc.impl.RpcOutputNettyImpl;
 import com.tongwan.common.net.ResultObject;
 import com.tongwan.common.net.channel.BaseChannel;
@@ -20,7 +21,7 @@ public class NettyChannelImpl implements BaseChannel {
 	}
 	
 	@Override
-	public void writeRpcOutput(RpcOutputNettyImpl out) {
+	public void writeRpcOutput(RpcOutput out) {
 		byte[] bytes=out.toByteArray();
 		ChannelBuffer buffer=ChannelBuffers.buffer(4+bytes.length);
 		buffer.writeInt(bytes.length);
@@ -30,7 +31,7 @@ public class NettyChannelImpl implements BaseChannel {
 
 	@Override
 	public  void writeResultObject(ResultObject resultObject) {
-		RpcOutputNettyImpl out=new RpcOutputNettyImpl();
+		RpcOutput out=new RpcOutputNettyImpl();
 		out.writeInt(resultObject.getCmd());
 		out.writeInt(resultObject.getResult());
 		out.writeObject(resultObject.getValue());

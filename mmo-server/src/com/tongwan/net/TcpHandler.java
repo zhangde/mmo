@@ -13,7 +13,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.tongwan.common.builder.rpc.io.RpcInput;
+import com.tongwan.common.io.rpc.impl.RpcInputNettyImpl;
 import com.tongwan.common.net.channel.netty.NettyChannelImpl;
 @Component
 public class TcpHandler extends SimpleChannelHandler {
@@ -24,7 +24,7 @@ public class TcpHandler extends SimpleChannelHandler {
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx,final MessageEvent e) throws Exception {
 		log.debug("messageReceived");
-		service.process(new NettyChannelImpl(e.getChannel()), new RpcInput((byte[])e.getMessage()));
+		//service.process(new NettyChannelImpl(e.getChannel()), new RpcInputNettyImpl((byte[])e.getMessage()));
 	}
 	
 	@Override

@@ -1,17 +1,15 @@
 package com.tongwan.common.io.rpc.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import static com.tongwan.common.io.rpc.MessageType.TYPE_BOOLEAN_TRUE;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tongwan.common.io.rpc.RpcVo;
+import org.jboss.netty.buffer.ChannelBuffer;
 
-import static com.tongwan.common.io.rpc.MessageType.*;
+import com.tongwan.common.io.rpc.RpcInput;
+import com.tongwan.common.io.rpc.RpcVo;
 
 /**
  * 网络数据包输入缓冲区
@@ -19,55 +17,40 @@ import static com.tongwan.common.io.rpc.MessageType.*;
  *
  * @date 2014年1月18日
  */
-public class RpcInputNettyImpl {
-	private DataInputStream is;
-	public RpcInputNettyImpl(byte[] buf){
-		this.is=new DataInputStream(new ByteArrayInputStream(buf));
+public class RpcInputNettyImpl implements RpcInput{
+	private ChannelBuffer buffer;
+	public RpcInputNettyImpl(ChannelBuffer buf){
+		this.buffer=buf;
 	}
 	public int readInt(){
-		try {
-			return is.readInt();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return 0;
+		return buffer.readInt();
 	}
 	public String readString(){
-		try {
-			return is.readUTF();
-		} catch (IOException e) {
-			e.printStackTrace();
+		int len=readInt();
+		if(len>0){
+			byte[] bytes=new byte[len];
+			buffer.readBytes(bytes, 0, bytes.length);
+			try {
+				return new String(bytes,"utf8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
 	public long readLong(){
-		try {
-			return is.readLong();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return 0;
+		return buffer.readLong();
 	}
 	public double readDouble(){
-		try {
-			return is.readDouble();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return 0;
+		return buffer.readDouble();
 	}
 	public boolean readBoolean(){
-		try {
-			byte _byte=is.readByte();
-			if(_byte==TYPE_BOOLEAN_TRUE){
-				return true;
-			}else{
-				return false;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		byte _byte=buffer.readByte();
+		if(_byte==TYPE_BOOLEAN_TRUE){
+			return true;
+		}else{
+			return false;
 		}
-		return false;
 	}
 	/**
 	 * 
@@ -75,35 +58,26 @@ public class RpcInputNettyImpl {
 	 * @return
 	 */
 	public <T> List<T> readList(Class<T> gType){
-		try {
-			int size=is.readInt();
-			if(size>0){
-				List<T> result=new ArrayList<>();
-				for(int i=0;i<size;i++){
-					result.add(readObject(gType));
-				}
-				return  result;
+		int size=readInt();
+		if(size>0){
+			List<T> result=new ArrayList<>();
+			for(int i=0;i<size;i++){
+				result.add(readObject(gType));
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			return  result;
 		}
 		return null;
 	}
 	public byte[][] readByteArray2(){
-		try {
-			int size1=is.readInt();
-			int size2=is.readInt();
-			byte[][] bytes=new byte[size1][size2];
-			for(int i=0;i<size1;i++){
-				for(int j=0;j<size2;j++){
-					bytes[i][j]=is.readByte();
-				}
+		int size1=readInt();
+		int size2=readInt();
+		byte[][] bytes=new byte[size1][size2];
+		for(int i=0;i<size1;i++){
+			for(int j=0;j<size2;j++){
+				bytes[i][j]=buffer.readByte();
 			}
-			return bytes;
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		return null;
+		return bytes;
 	}
 	public <T> T readObject(Class<T> clazz){
 		if(clazz.isAssignableFrom(RpcVo.class)){

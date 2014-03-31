@@ -17,7 +17,7 @@ public class FightServiceImpl implements FightService {
 
 	@Override
 	public void monster2Monster(MonsterDomain attacker, MonsterDomain target) {
-		System.out.println("attacker"+"-target");
+		//System.out.println("attacker"+"-target");
 	}
 
 }

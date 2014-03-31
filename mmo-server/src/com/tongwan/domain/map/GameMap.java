@@ -86,7 +86,7 @@ public class GameMap {
 			long begin=System.currentTimeMillis();
 			List<Point> path=aStar.find(centerY, centerX, tmpY, tmpX);
 			long end=System.currentTimeMillis();
-			System.out.println("("+tmpX+","+tmpY+")"+"time:"+(end-begin));
+			//System.out.println("("+tmpX+","+tmpY+")"+"time:"+(end-begin));
 			if(path!=null && !path.isEmpty()){
 				
 //				System.out.println("path:"+path.size());

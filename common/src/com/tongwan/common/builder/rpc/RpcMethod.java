@@ -78,7 +78,7 @@ public class RpcMethod {
 			sb.delete(sb.length()-1, sb.length());
 		}
 		sb.append(") throws Exception{\r\n");
-		l(sb,"		RpcOutput buffer=new RpcOutput();");
+		l(sb,"		RpcOutput buffer=new RpcOutputNettyImpl();");
 		l(sb,"		buffer.writeInt(%s);",getTag().cmd());
 		l(sb,"		buffer.writeInt(sn++);");
 		for(int i=0;i<parameterTypes.length;i++){

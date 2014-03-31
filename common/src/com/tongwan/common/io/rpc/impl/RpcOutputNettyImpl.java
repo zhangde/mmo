@@ -1,15 +1,17 @@
 package com.tongwan.common.io.rpc.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import static com.tongwan.common.io.rpc.MessageType.TYPE_BOOLEAN_FALSE;
+import static com.tongwan.common.io.rpc.MessageType.TYPE_BOOLEAN_TRUE;
+import static com.tongwan.common.io.rpc.MessageType.TYPE_NULL;
+
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
+
+import com.tongwan.common.io.rpc.RpcOutput;
 import com.tongwan.common.io.rpc.RpcVo;
-
-import static com.tongwan.common.io.rpc.MessageType.*;
-
-import com.tongwan.common.serialize.SimpleSerializeX;
 
 /**
  * 网络数据包输出缓冲区
@@ -17,12 +19,10 @@ import com.tongwan.common.serialize.SimpleSerializeX;
  *
  * @date 2014年1月18日
  */
-public class RpcOutputNettyImpl {
-	private ByteArrayOutputStream baos;
-	private DataOutputStream os;
+public class RpcOutputNettyImpl implements RpcOutput{
+	private ChannelBuffer buffer;
 	public RpcOutputNettyImpl(){
-		baos=new ByteArrayOutputStream();
-		os=new DataOutputStream(baos);
+		buffer=ChannelBuffers.dynamicBuffer();
 	}
 	public void writeObject(Object o){
 		if(o instanceof Integer){
@@ -47,42 +47,35 @@ public class RpcOutputNettyImpl {
 		}
 	}
 	public void writeInt(int v){
-		try {
-			os.writeInt(v);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		buffer.writeInt(v);
 	}
 	public void writeString(String v){
-		try {
-			os.writeUTF(v);
-		} catch (IOException e) {
-			e.printStackTrace();
+		int len=0;
+		if(v!=null){
+			try {
+				byte[] bytes=v.getBytes("utf8");
+				len=bytes.length;
+				writeInt(len);
+				buffer.writeBytes(bytes);
+				return;
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			
 		}
+		writeInt(len);
 	}
 	public void writeLong(long v){
-		try {
-			os.writeLong(v);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		buffer.writeLong(v);
 	}
 	public void writeDouble(double v){
-		try {
-			os.writeDouble(v);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		buffer.writeDouble(v);
 	}
 	public void writeBoolean(boolean v){
-		try {
-			if(v){
-				os.writeByte(TYPE_BOOLEAN_TRUE);
-			}else{
-				os.writeByte(TYPE_BOOLEAN_FALSE);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(v){
+			buffer.writeByte(TYPE_BOOLEAN_TRUE);
+		}else{
+			buffer.writeByte(TYPE_BOOLEAN_FALSE);
 		}
 	}
 	public <T> void writeList(List<T> v){
@@ -111,22 +104,14 @@ public class RpcOutputNettyImpl {
 		}
 	}
 	public void writeByteArray(byte[] bytes){
-		try {
-			os.writeInt(bytes.length);
-			os.write(bytes);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		writeInt(bytes.length);
+		buffer.writeBytes(bytes);
 	}
 	public void writeByteArray2(byte[][] bytes){
-		try {
-			os.writeInt(bytes.length);
-			os.writeInt(bytes[0].length);
-			for(int i=0;i<bytes.length;i++){
-				os.write(bytes[i]);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		writeInt(bytes.length);
+		writeInt(bytes[0].length);
+		for(int i=0;i<bytes.length;i++){
+			buffer.writeBytes(bytes[i]);
 		}
 	}
 	public void writeRpcVo(RpcVo v){
@@ -134,6 +119,6 @@ public class RpcOutputNettyImpl {
 	}
 	
 	public byte[] toByteArray(){
-		return baos.toByteArray();
+		return buffer.array();
 	}
 }

@@ -1,7 +1,6 @@
 package gen.data ;
 import java.util.*;
-import com.tongwan.common.builder.rpc.*;
-import com.tongwan.common.builder.rpc.io.*;
+import com.tongwan.common.io.rpc.*;
 public class PlayerVO implements RpcVo{
 	public int golden;
 	public int silver;

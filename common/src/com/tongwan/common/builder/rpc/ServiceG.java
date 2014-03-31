@@ -96,7 +96,7 @@ public class ServiceG {
 		l(sb,"import gen.data.*;");
 		l(sb,"import com.tongwan.common.net.ResultObject;");
 		l(sb,"import com.tongwan.common.net.channel.BaseChannel;");
-		l(sb,"import com.tongwan.common.builder.rpc.io.*;");
+		l(sb,"import com.tongwan.common.io.rpc.*;");
 		l(sb,"public abstract class RpcService {");
 		l(sb,"	public void process(BaseChannel channel,RpcInput in) throws Exception{");
 //		l(sb,"		Map parame=channel.getParame();");
@@ -156,7 +156,8 @@ public class ServiceG {
 		l(sb,"import gen.data.*;");
 		l(sb,"import com.tongwan.common.net.ResultObject;");
 		l(sb,"import com.tongwan.common.net.channel.BaseChannel;");
-		l(sb,"import com.tongwan.common.builder.rpc.io.*;");
+		l(sb,"import com.tongwan.common.io.rpc.*;");
+		l(sb,"import com.tongwan.common.io.rpc.impl.*;");
 		l(sb,"public abstract class RpcClient {");
 		l(sb,"	protected BaseChannel channel;");
 		l(sb,"	private int sn=0;");
@@ -234,8 +235,7 @@ public class ServiceG {
 		StringBuffer sb=new StringBuffer();
 		l(sb,"package %s ;",newPk);
 		l(sb,"import java.util.*;");
-		l(sb,"import com.tongwan.common.builder.rpc.*;");
-		l(sb,"import com.tongwan.common.builder.rpc.io.*;");
+		l(sb,"import com.tongwan.common.io.rpc.*;");
 		l(sb,"public class %s implements RpcVo{",c.getSimpleName());
 		Field[] fields=c.getDeclaredFields();
 		String generics = "";

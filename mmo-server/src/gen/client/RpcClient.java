@@ -2,14 +2,19 @@ package gen.client;
 import gen.data.*;
 import com.tongwan.common.net.ResultObject;
 import com.tongwan.common.net.channel.BaseChannel;
-import com.tongwan.common.builder.rpc.io.*;
+import com.tongwan.common.io.rpc.*;
+import com.tongwan.common.io.rpc.impl.*;
 public abstract class RpcClient {
-	private BaseChannel channel;
+	protected BaseChannel channel;
 	private int sn=0;
 	public void dispath(RpcInput in)throws Exception{
 		int cmd=in.readInt();
 		switch(cmd){
 			case 2 :{
+				_pushSpriteChange(in,sn);
+				return;
+			}
+			case 4 :{
 				_closeUser(in,sn);
 				return;
 			}
@@ -23,26 +28,38 @@ public abstract class RpcClient {
 			}
 		}
 	}
-	public  void closeUser(String name) throws Exception{
-		RpcOutput buffer=new RpcOutput();
+	public  void pushSpriteChange() throws Exception{
+		RpcOutput buffer=new RpcOutputNettyImpl();
 		buffer.writeInt(2);
+		buffer.writeInt(sn++);
+		channel.writeRpcOutput(buffer);
+	}
+	public  void closeUser(String name) throws Exception{
+		RpcOutput buffer=new RpcOutputNettyImpl();
+		buffer.writeInt(4);
 		buffer.writeInt(sn++);
 		buffer.writeString(name);
 		channel.writeRpcOutput(buffer);
 	}
 	public  void loadGameMap() throws Exception{
-		RpcOutput buffer=new RpcOutput();
+		RpcOutput buffer=new RpcOutputNettyImpl();
 		buffer.writeInt(3);
 		buffer.writeInt(sn++);
 		channel.writeRpcOutput(buffer);
 	}
 	public  void login(String name,String password) throws Exception{
-		RpcOutput buffer=new RpcOutput();
+		RpcOutput buffer=new RpcOutputNettyImpl();
 		buffer.writeInt(1);
 		buffer.writeInt(sn++);
 		buffer.writeString(name);
 		buffer.writeString(password);
 		channel.writeRpcOutput(buffer);
+	}
+	private void _pushSpriteChange(RpcInput in,int sn) throws Exception{
+		int state=in.readInt();
+		SpriteVO result=new SpriteVO();
+		result.read(in);
+		pushSpriteChangeCallback(state,result);
 	}
 	private void _closeUser(RpcInput in,int sn) throws Exception{
 		int state=in.readInt();
@@ -61,6 +78,8 @@ public abstract class RpcClient {
 		result.read(in);
 		loginCallback(state,result);
 	}
+	public abstract void pushSpriteChangeCallback(int state,SpriteVO result)throws Exception;
+
 	public abstract void closeUserCallback(int state,UserVO result)throws Exception;
 
 	public abstract void loadGameMapCallback(int state,byte[][] result)throws Exception;
