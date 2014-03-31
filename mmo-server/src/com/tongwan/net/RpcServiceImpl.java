@@ -7,6 +7,7 @@ import com.tongwan.common.net.ResultObject;
 import com.tongwan.domain.map.GameMap;
 import com.tongwan.service.GameMapService;
 
+import gen.data.SpriteVO;
 import gen.data.UserVO;
 import gen.service.RpcService;
 
@@ -32,7 +33,6 @@ public class RpcServiceImpl extends RpcService{
 	public ResultObject<byte[][]> loadGameMap() throws Exception {
 		GameMap map=gameMapService.getGameMap(1);
 		ResultObject<byte[][]> result=new ResultObject<>();
-		result.setResult(1);
 		result.setValue(map.getData());
 		return result;
 	}
@@ -43,6 +43,12 @@ public class RpcServiceImpl extends RpcService{
 	@Override
 	public ResultObject<UserVO> login(String name, String password)
 			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResultObject<SpriteVO> pushSpriteChange() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

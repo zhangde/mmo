@@ -104,7 +104,7 @@ public class MonsterDomain implements Spire, BehaviorActor{
 				if(gameMap.isPathPass(point.x, point.y)){
 					this.x=point.x;
 					this.y=point.y;
-					LOG.debug("["+this.id+"]移动到:("+x+","+y+")");
+					//Log.debug("["+this.id+"]移动到:("+x+","+y+")");
 					//TcpHandler.pushAddSprite(this);
 					return true;
 				}else{

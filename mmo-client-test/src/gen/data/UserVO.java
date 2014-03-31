@@ -1,20 +1,24 @@
 package gen.data ;
 import java.util.*;
+
 import com.tongwan.common.builder.rpc.*;
 import com.tongwan.common.builder.rpc.io.*;
+import com.tongwan.common.io.rpc.RpcVo;
+import com.tongwan.common.io.rpc.impl.RpcInputNettyImpl;
+import com.tongwan.common.io.rpc.impl.RpcOutputNettyImpl;
 public class UserVO implements RpcVo{
 	public int id;
 	public String name;
 	public PlayerVO playerVO;
 	public List<PlayerBattleVO> playerBattleVOs;
-	public void writeTo(RpcOutput buffer){
+	public void writeTo(RpcOutputNettyImpl buffer){
 		buffer.writeInt(id);
 		buffer.writeString(name);
 		playerVO.writeTo(buffer);
 		buffer.writeList(playerBattleVOs);
 		
 	}
-	public void read(RpcInput in){
+	public void read(RpcInputNettyImpl in){
 		id=in.readInt();
 		name=in.readString();
 		playerVO=in.readObject(PlayerVO.class);

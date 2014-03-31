@@ -3,6 +3,7 @@ package com.tongwan.net;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.tongwan.common.builder.rpc.RpcMethod;
 import com.tongwan.common.builder.rpc.RpcMethodTag;
@@ -29,13 +30,20 @@ public class CmdService {
 		public int id;
 		public int level;
 	}
+	class SpriteVO{
+		public int id;
+		public int x;
+		public int y;
+	}
 	interface RpcInterface{
 		@RpcMethodTag(cmd=1,params={"name","password"},remark="登陆")
 		public ResultObject<UserVO> login(String name,String password);
-		@RpcMethodTag(cmd=2,params={"name"},remark="封号")
+		@RpcMethodTag(cmd=4,params={"name"},remark="封号")
 		public ResultObject<UserVO> closeUser(String name);
 		@RpcMethodTag(cmd=3,params={},remark="加载地图")
 		public ResultObject<byte[][]> loadGameMap();
+		@RpcMethodTag(cmd=2,params={},remark="推送精灵变更")
+		public ResultObject<SpriteVO> pushSpriteChange();
 	}
 	/**
 	 * @param args
