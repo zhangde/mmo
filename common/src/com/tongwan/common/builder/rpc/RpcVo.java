@@ -1,6 +1,6 @@
 package com.tongwan.common.builder.rpc;
 
-import com.tongwan.common.builder.rpc.io.RpcInput;
+import com.tongwan.common.builder.rpc.io.RpcInputNettyImpl;
 import com.tongwan.common.builder.rpc.io.RpcOutput;
 
 /**
@@ -11,5 +11,5 @@ import com.tongwan.common.builder.rpc.io.RpcOutput;
  */
 public interface RpcVo {
 	public void writeTo(RpcOutput buffer);
-	public void read(RpcInput in);
+	public void read(RpcInputNettyImpl in);
 }
