@@ -1,4 +1,4 @@
-package com.tongwan.domain.map;
+package com.tongwan.domain.sprite;
 
 /**
  * 地图精灵类型

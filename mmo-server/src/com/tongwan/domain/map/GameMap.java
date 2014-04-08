@@ -10,6 +10,8 @@ import java.util.Set;
 import com.tongwan.common.path.AStar;
 import com.tongwan.common.path.MaskTypes;
 import com.tongwan.common.path.Point;
+import com.tongwan.domain.sprite.SpireType;
+import com.tongwan.domain.sprite.Sprite;
 
 
 /**

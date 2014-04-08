@@ -13,32 +13,27 @@ import com.tongwan.common.ai.behaviortree.BehaviorActor;
 import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.path.Point;
 import com.tongwan.domain.map.GameMap;
-import com.tongwan.domain.map.Sprite;
-import com.tongwan.domain.map.SpireType;
+import com.tongwan.domain.sprite.BaseSprite;
+import com.tongwan.domain.sprite.SpireType;
+import com.tongwan.domain.sprite.Sprite;
 import com.tongwan.helper.FightHelper;
+import com.tongwan.helper.WorldPushHelper;
 import com.tongwan.net.TcpHandler;
 
 /**
  * @author zhangde
  * @date 2013年12月25日
  */
-public class MonsterDomain implements Sprite, BehaviorActor{
+public class MonsterDomain extends BaseSprite implements BehaviorActor{
 	private static Log LOG = LogFactory.getLog(MonsterDomain.class);
 	private static final AtomicLong AUTO_MONSTER_ID=new AtomicLong();
-	/** 唯一标识 */
-	private long id;
 	/** 基本配置ID */
 	private int baseId;
 	/** 战斗数据模型 */
 	private MonsterBattle battle;
-	/** 所在地图 */
-	private GameMap gameMap;
 	/** 当前怪物的AI行为树 */
 	private BehaviorTree behaviorTree;
-	/** 当前x坐标 */
-	private int x;
-	/** 当前y坐标 */
-	private int y;
+	
 	/** 出生的x坐标*/
 	private int homeX;
 	/** 出生的y坐标*/
@@ -52,16 +47,13 @@ public class MonsterDomain implements Sprite, BehaviorActor{
 	/** 当前移动路径 */
 	private List<Point> currentPath;
 	public MonsterDomain(int baseId,MonsterBattle battle,int homeX,int homeY,int patrolRadius,BehaviorTree behaviorTree,GameMap gameMap){
-		this.id=AUTO_MONSTER_ID.getAndIncrement();
+		super(AUTO_MONSTER_ID.getAndIncrement(),gameMap,homeX,homeY);
 		this.baseId=baseId;
 		this.battle=battle;
 		this.behaviorTree=behaviorTree;
 		this.homeX=homeX;
 		this.homeY=homeY;
-		this.x=homeX;
-		this.y=homeY;
 		this.patrolRadius=patrolRadius;
-		this.gameMap=gameMap;
 	}
 	/**
 	 * 是否死亡
@@ -83,11 +75,12 @@ public class MonsterDomain implements Sprite, BehaviorActor{
 	 */
 	private boolean patrol(){
 		if(currentPath==null || currentPath.isEmpty()){
-			if(System.currentTimeMillis() - lastMoveTime >= 200){
-				currentPath=gameMap.randomPoint(x, y, patrolRadius);
+			if(System.currentTimeMillis() - lastMoveTime >= 10000){
+				currentPath=getGameMap().randomPoint(getX(), getY(), patrolRadius);
 				if(currentPath!=null && !currentPath.isEmpty()){
-					lastMoveTime=System.currentTimeMillis();
-					LOG.debug("["+id+"]开始移动");
+					//lastMoveTime=System.currentTimeMillis();
+					LOG.debug("["+getId()+"]开始移动");
+					WorldPushHelper.pushMotion(this, currentPath);
 					return true;
 				}
 			}
@@ -99,13 +92,15 @@ public class MonsterDomain implements Sprite, BehaviorActor{
 	 * @return
 	 */
 	private boolean moveOneStep(){
+		long now=System.currentTimeMillis();
 		if(currentPath!=null && !currentPath.isEmpty()){
-			if(System.currentTimeMillis() - lastMoveTime >= 200){//200毫秒移动一步
+			if(now - lastMoveTime >= 250){//200毫秒移动一步
 				Point point=currentPath.remove(0);
-				if(gameMap.isPathPass(point.x, point.y)){
-					this.x=point.x;
-					this.y=point.y;
-					LOG.debug("["+this.id+"]移动到:("+x+","+y+")");
+				if(getGameMap().isPathPass(point.x, point.y)){
+					lastMoveTime=now;
+					setX(point.x);
+					setY(point.y);
+					LOG.debug("["+getId()+"]移动到:("+getX()+","+getY()+")"+now);
 					//TcpHandler.pushAddSprite(this);
 					return true;
 				}else{
@@ -164,22 +159,11 @@ public class MonsterDomain implements Sprite, BehaviorActor{
 		}
 		return false;
 	}
-	public long getId() {
-		return id;
-	}
-	public int getX() {
-		return x;
-	}
-	public int getY() {
-		return y;
-	}
+
 	public MonsterBattle getBattle() {
 		return battle;
 	}
-	@Override
-	public GameMap getGameMap() {
-		return gameMap;
-	}
+
 	@Override
 	public SpireType getType() {
 		return SpireType.MONSTER;

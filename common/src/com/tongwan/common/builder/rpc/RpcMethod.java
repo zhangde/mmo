@@ -106,6 +106,50 @@ public class RpcMethod {
 		return sb.toString();
 	}
 	
+	public String toClient4CSharp(){
+		StringBuffer sb=new StringBuffer();
+		sb.append("	public  void ").append(m.getName()).append("(");
+		for(int i=0;i<parameterTypes.length;i++){
+			String t=parameterTypes[i].toString();
+			t=t.substring(t.lastIndexOf(".")+1);
+			if(t.indexOf("$")!=-1){
+				t=t.substring(t.indexOf("$")+1,t.length());
+			}
+			String pName=tag.params()[i];
+			sb.append(t).append(" ").append(pName).append(",");
+		}
+		if(parameterTypes.length>0){
+			sb.delete(sb.length()-1, sb.length());
+		}
+		sb.append("){\r\n");
+		l(sb,"		RpcOutput buffer=new RpcOutput();");
+		l(sb,"		buffer.writeInt(%s);",getTag().cmd());
+		l(sb,"		buffer.writeInt(sn++);");
+		for(int i=0;i<parameterTypes.length;i++){
+			String t=parameterTypes[i].toString();
+			t=t.substring(t.lastIndexOf(".")+1);
+			if(t.indexOf("$")!=-1){
+				t=t.substring(t.indexOf("$")+1,t.length());
+			}
+			String pName=tag.params()[i];
+//			sb.append(t).append(" ").append(pName).append(",");
+			if(isInt(t)){
+				l(sb,"		buffer.writeInt(%s);",pName);
+			}else if(isLong(t)){
+				l(sb,"		buffer.writeLong(%s);",pName);
+			}else if(isString(t)){
+				l(sb,"		buffer.writeString(%s);",pName);
+			}else if(isBoolean(t)){
+				l(sb,"		buffer.writeBoolean(%s);",pName);
+			}else if(isDouble(t)){
+				l(sb,"		buffer.writeDouble(%s);",pName);
+			}
+		}
+		l(sb,"		channel.writeRpcOutput(buffer);");
+		sb.append("	}");
+		return sb.toString();
+	}
+	
 	public String toInner(){
 		StringBuffer sb=new StringBuffer();
 		sb.append("	public void _").append(m.getName()).append("(BaseChannel channel,RpcInput in,int sn) throws Exception{\r\n");
@@ -170,9 +214,37 @@ public class RpcMethod {
 		sb.append("	}");
 		return sb.toString();
 	}
+	public String toCSharpClientInner(){
+		String returnType=getReturnType2();
+		StringBuffer sb=new StringBuffer();
+		sb.append("	private void _").append(m.getName()).append("(RpcInput input,int sn){\r\n");
+		l(sb,"		int state=input.readInt();");
+		if(returnType.equals("byte[][]")){
+			l(sb,"		byte[][] result=input.readByteArray2();");
+			
+		}else{
+			l(sb,"		Vos.%s result=new Vos.%s();",returnType,returnType);
+			l(sb,"		result.read(input);");
+		}
+		
+		l(sb,"		%sCallback(state,result);",m.getName());
+		sb.append("	}");
+		return sb.toString();
+	}
 	public String toJavaClientAbstract(){
 		StringBuffer sb=new StringBuffer();
 		l(sb,"	public abstract void %sCallback(int state,%s result)throws Exception;",m.getName(),getReturnType2());
+		return sb.toString();
+	}
+	public String toCSharpClientAbstract(){
+		StringBuffer sb=new StringBuffer();
+		String type= getReturnType2();
+		if(type.equals("byte[][]")){
+			l(sb,"	public abstract void %sCallback(int state,%s result);",m.getName(),type);
+		}else{
+			l(sb,"	public abstract void %sCallback(int state,Vos.%s result);",m.getName(),type);
+		}
+		
 		return sb.toString();
 	}
 	public String toAbstract(){

@@ -1,4 +1,6 @@
-package com.tongwan.domain.map;
+package com.tongwan.domain.sprite;
+
+import com.tongwan.domain.map.GameMap;
 
 /**
  * 地图可见精灵抽象接口

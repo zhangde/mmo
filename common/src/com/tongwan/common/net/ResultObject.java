@@ -13,6 +13,12 @@ public class ResultObject<T> {
 	private int result;
 	/** 返回值*/
 	private T value;
+	
+	public static ResultObject valueOf(int cmd){
+		ResultObject resultObject = new ResultObject();
+		resultObject.cmd=cmd;
+		return resultObject;
+	}
 	public int getResult() {
 		return result;
 	}
