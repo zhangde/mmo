@@ -49,6 +49,7 @@ public class ServiceG {
 	
 	public static void main(String[] args) throws Exception {
 		serverDataStruct("gen.data",ServiceG.class);
+		client4CSharpDataStruct("gen.data",ServiceG.class);
 //		Class g=ServiceG.class;
 //		Class[] classes=g.getDeclaredClasses();
 //		for(Class c:classes){
@@ -65,7 +66,32 @@ public class ServiceG {
 		}
 		server("gen.service",methods);
 		client4Java("gen.client", methods);
+		client4CSharp(RpcInterface.class,"gen.client",methods);
 		clientJavaScript("gen", methods);
+	}
+	public static void client4CSharpDataStruct(String pg,Class g) throws Exception{
+		StringBuffer sb=new StringBuffer();
+		l(sb,"using System.Collections;");
+		l(sb,"using System.Collections.Generic;");
+		l(sb,"public class Vos{");
+		String path = "src/"+pg.replaceAll("[.]", "/");
+		File dir=new File(path);
+		if(!dir.exists()){
+			System.out.println(dir.mkdirs());
+		}
+		Class[] classes=g.getDeclaredClasses();
+		for(Class c:classes){
+			if(!c.isInterface()){
+				String content=toClientClassFile(c, pg);
+				l(sb,content);
+			}
+		}
+		l(sb,"}");
+		File f=new File(path+"/Vos.cs");
+		FileOutputStream fos=new FileOutputStream(f);
+		fos.write(sb.toString().getBytes("utf8"));
+		fos.flush();
+		fos.close();
 	}
 	public static void serverDataStruct(String pg,Class g) throws Exception{
 		String path = "src/"+pg.replaceAll("[.]", "/");
@@ -190,6 +216,56 @@ public class ServiceG {
 			file.mkdirs();
 		}
 		File clazzFile=new File("src/"+path+"/RpcClient.java");
+		if(!clazzFile.exists()){
+			clazzFile.createNewFile();
+		}
+		FileOutputStream fis=new FileOutputStream(clazzFile);
+		fis.write(sb.toString().getBytes("utf8"));
+		fis.flush();
+		fis.close();
+		System.out.println(sb);
+		
+	}
+	
+	public static void client4CSharp(Class clazz,String pg,List<RpcMethod> methods) throws Exception{
+		StringBuffer sb=new StringBuffer();
+		//l(sb,"package %s;",pg);
+		
+		l(sb,"using UnityEngine;");
+		l(sb,"using System.Collections;");
+		l(sb,"using System;");
+		l(sb,"public abstract class %sClient {",clazz.getSimpleName());
+		l(sb,"	protected BaseChannel channel;");
+		l(sb,"	private int sn=0;");
+		l(sb,"	public void dispath(RpcInput input){");
+		l(sb,"		int cmd=input.readInt();");
+		l(sb,"		switch(cmd){");
+		for(RpcMethod m:methods){
+			l(sb,"			case %s :{",m.getTag().cmd());
+			l(sb,"				_%s(input,sn);",m.getM().getName());
+			l(sb,"				return;");
+			l(sb,"			}");
+		}
+		l(sb,"		}");
+		l(sb,"	}");
+		//请求方法
+		for(RpcMethod m:methods){
+			l(sb,m.toClient4CSharp());
+		}
+		//内部解析数据格式方法
+		for(RpcMethod m:methods){
+			l(sb,m.toCSharpClientInner());
+		}
+		for(RpcMethod m:methods){
+			l(sb,m.toCSharpClientAbstract());
+		}
+		l(sb,"}");
+		String path=pg.replaceAll("[.]","/");
+		File file=new File("src/"+path);
+		if(!file.exists()){
+			file.mkdirs();
+		}
+		File clazzFile=new File("src/"+path+"/"+clazz.getSimpleName()+"Client.cs");
 		if(!clazzFile.exists()){
 			clazzFile.createNewFile();
 		}
@@ -326,6 +402,125 @@ public class ServiceG {
 		}
 		l(sb,"	}");
 		l(sb,"}");
+		return sb.toString();
+	}
+	/**
+	 * 
+	 * @param c
+	 * @param newPk
+	 * @return
+	 */
+	public static String toClientClassFile(Class c,String newPk){
+		StringBuffer sb=new StringBuffer();
+		l(sb,"	public class %s : RpcVo{",c.getSimpleName());
+		Field[] fields=c.getDeclaredFields();
+		String generics = "";
+		for(Field f:fields){
+			if(f.getName().equals("this$0")){
+				continue;
+			}
+			String t=f.getType().getSimpleName();
+			Type genericType=f.getGenericType(); 
+			if(genericType instanceof ParameterizedType){
+				ParameterizedType type = (ParameterizedType) genericType;
+			    Type[] typeArguments = type.getActualTypeArguments();
+			    for(Type typeArgument : typeArguments){
+			        Class typeArgClass = (Class) typeArgument;
+			        generics= typeArgClass.getSimpleName();
+			    }
+			}
+			if(generics!=null && !generics.equals("")){
+				
+				l(sb,"		public %s<%s> %s;",t,generics,f.getName());
+			}else{
+				if(t.equals("String")){
+					t="string";
+				}
+				l(sb,"		public %s %s;",t,f.getName());
+			}
+			
+		}
+		l(sb,"		public void writeTo(RpcOutput buffer){");
+		generics="";
+		for(Field f:fields){
+			Type genericType=f.getGenericType(); 
+			if(genericType instanceof ParameterizedType){
+				ParameterizedType type = (ParameterizedType) genericType;
+			    Type[] typeArguments = type.getActualTypeArguments();
+			    for(Type typeArgument : typeArguments){
+			        Class typeArgClass = (Class) typeArgument;
+			        generics= typeArgClass.getSimpleName();
+			    }
+			}
+			String simpleName=f.getType().getSimpleName();
+			if(f.getName().equals("this$0")){
+				continue;
+			}
+			String t=f.getType().getSimpleName();
+			if(isInt(t)){
+				l(sb,"			buffer.writeInt(%s);",f.getName());
+			}else if(isLong(t)){
+				l(sb,"			buffer.writeLong(%s);",f.getName());
+			}else if(isString(t)){
+				l(sb,"			buffer.writeString(%s);",f.getName());
+			}else if(isBoolean(t)){
+				l(sb,"			buffer.writeBoolean(%s);",f.getName());
+			}else if(isDouble(t)){
+				l(sb,"			buffer.writeDouble(%s);",f.getName());
+			}else if(isList(t)){
+				l(sb,"			buffer.writeList(%s);",f.getName());
+			}else{
+				l(sb,"			%s.writeTo(buffer);",f.getName());
+			}
+		}
+		l(sb,"		");
+		l(sb,"		}");
+		l(sb,"		public void read(RpcInput input){");
+		for(Field f:fields){
+			String simpleName=f.getType().getSimpleName();
+			if(f.getName().equals("this$0")){
+				continue;
+			}
+			String t=f.getType().getSimpleName();
+			if(isInt(t)){
+				l(sb,"			%s=input.readInt();",f.getName());
+			}else if(isLong(t)){
+				l(sb,"			%s=input.readLong();",f.getName());
+			}else if(isString(t)){
+				l(sb,"			%s=input.readString();",f.getName());
+			}else if(isBoolean(t)){
+				l(sb,"			%s=input.readBoolean();",f.getName());
+			}else if(isDouble(t)){
+				l(sb,"			%s=input.readDouble();",f.getName());
+			}else if(isList(t)){
+				l(sb,"			int size=input.readInt();");
+				l(sb,"			%s=new List<%s>();",f.getName(),generics);
+				l(sb,"			for(int i=0;i<size;i++){");
+				if(isInt(t)){
+					l(sb,"				%s.add(input.readInt());",f.getName());
+				}else if(isLong(t)){
+					l(sb,"				%s.add(input.readLong());",f.getName());
+				}else if(isString(t)){
+					l(sb,"				%s.add(input.readString());",f.getName());
+				}else if(isBoolean(t)){
+					l(sb,"				%s.add(input.readBoolean());",f.getName());
+				}else if(isDouble(t)){
+					l(sb,"				%s.add(input.readDouble());",f.getName());
+				}else{
+					l(sb,"				%s _%s = new %s();",generics,generics,generics);
+					l(sb,"				_%s.read(input);",generics);
+					l(sb,"				%s.Add(_%s);",f.getName(),generics);
+					//l(sb,"				%s.add(input.readObject(%s.class));",f.getName(),generics);
+				}
+				l(sb,"			}");
+			}else{
+				l(sb,"			%s = new %s();",f.getName(),t);
+				l(sb,"			%s.read(input);",f.getName());
+				//l(sb,"			%s=input.readObject(%s.class);",f.getName(),t);
+			}
+		}
+		l(sb,"		}");
+		l(sb,"	}");
 		return sb.toString();
 	}
 }

@@ -123,7 +123,8 @@ public class RpcOutputNettyImpl implements RpcOutput{
 	}
 	
 	public byte[] toByteArray(){
-		int offset=buffer.writableBytes();
+//		buffer.discardReadBytes();
+		int offset=buffer.readableBytes();
 		byte[] bytes=new byte[offset];
 		buffer.readBytes(bytes);
 		return bytes;
