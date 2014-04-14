@@ -19,6 +19,7 @@ public interface RpcOutput {
 	public void writeArray(Object array,Class componentType);
 	public void writeByteArray(byte[] bytes);
 	public void writeByteArray2(byte[][] bytes);
+	public void writeIntArray(int[] v);
 	public void writeRpcVo(RpcVo v);
 	public byte[] toByteArray();
 }

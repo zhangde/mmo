@@ -3,7 +3,7 @@
  */
 package com.tongwan.common.builder.rpc;
 
-import static com.tongwan.common.lang.TypeX.isBoolean;
+import static com.tongwan.common.lang.TypeX.*;
 import static com.tongwan.common.lang.TypeX.isDouble;
 import static com.tongwan.common.lang.TypeX.isInt;
 import static com.tongwan.common.lang.TypeX.isList;
@@ -355,6 +355,8 @@ public class ServiceG {
 				l(sb,"		buffer.writeDouble(%s);",f.getName());
 			}else if(isList(t)){
 				l(sb,"		buffer.writeList(%s);",f.getName());
+			}else if(isIntArray(t)){
+				l(sb,"		buffer.writeIntArray(%s);",f.getName());
 			}else{
 				l(sb,"		%s.writeTo(buffer);",f.getName());
 			}
@@ -378,6 +380,8 @@ public class ServiceG {
 				l(sb,"		%s=in.readBoolean();",f.getName());
 			}else if(isDouble(t)){
 				l(sb,"		%s=in.readDouble();",f.getName());
+			}else if(isIntArray(t)){
+				l(sb,"		%s=in.readIntArray();",f.getName());
 			}else if(isList(t)){
 				l(sb,"		int size=in.readInt();");
 				l(sb,"		%s=new ArrayList<>();",f.getName());
@@ -469,6 +473,8 @@ public class ServiceG {
 				l(sb,"			buffer.writeDouble(%s);",f.getName());
 			}else if(isList(t)){
 				l(sb,"			buffer.writeList(%s);",f.getName());
+			}else if(isIntArray(t)){
+				l(sb,"			buffer.writeIntArray(%s);",f.getName());
 			}else{
 				l(sb,"			%s.writeTo(buffer);",f.getName());
 			}
@@ -492,6 +498,8 @@ public class ServiceG {
 				l(sb,"			%s=input.readBoolean();",f.getName());
 			}else if(isDouble(t)){
 				l(sb,"			%s=input.readDouble();",f.getName());
+			}else if(isIntArray(t)){
+				l(sb,"			%s=input.readIntArray();",f.getName());
 			}else if(isList(t)){
 				l(sb,"			int size=input.readInt();");
 				l(sb,"			%s=new List<%s>();",f.getName(),generics);

@@ -12,6 +12,10 @@ public abstract class RpcService {
 				_login(channel,in,sn);
 				return;
 			}
+			case 5 :{
+				_pushSpriteMotion(channel,in,sn);
+				return;
+			}
 			case 4 :{
 				_closeUser(channel,in,sn);
 				return;
@@ -34,6 +38,11 @@ public abstract class RpcService {
 		result.setCmd(1);
 		channel.writeResultObject(result);
 	}
+	public void _pushSpriteMotion(BaseChannel channel,RpcInput in,int sn) throws Exception{
+		ResultObject<SpriteMotionVO> result=pushSpriteMotion();
+		result.setCmd(5);
+		channel.writeResultObject(result);
+	}
 	public void _closeUser(BaseChannel channel,RpcInput in,int sn) throws Exception{
 		String name=in.readString();
 		ResultObject<UserVO> result=closeUser(name);
@@ -51,6 +60,7 @@ public abstract class RpcService {
 		channel.writeResultObject(result);
 	}
 	public abstract ResultObject<UserVO> login(String name,String password) throws Exception;
+	public abstract ResultObject<SpriteMotionVO> pushSpriteMotion() throws Exception;
 	public abstract ResultObject<UserVO> closeUser(String name) throws Exception;
 	public abstract ResultObject<byte[][]> loadGameMap() throws Exception;
 	public abstract ResultObject<SpriteVO> pushSpriteAdd() throws Exception;

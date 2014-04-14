@@ -39,7 +39,7 @@ public class MonsterServiceImpl implements MonsterService,ApplicationListener<Ai
 		for (int i = 1; i < 2; i++) {
 			MonsterBattle battle = new MonsterBattle();
 			battle.setHp(100);
-			MonsterDomain monster = new MonsterDomain(i, battle, 0, 0, 5, aiLevelService.get(1),map1);
+			MonsterDomain monster = new MonsterDomain(i, battle, 0, 0, 10, aiLevelService.get(1),map1);
 			System.out.println("创建monster [" + i + "]");
 			map1.join(monster);
 			monsterAction.addActor(monster);

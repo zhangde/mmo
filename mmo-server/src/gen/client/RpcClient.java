@@ -14,6 +14,10 @@ public abstract class RpcClient {
 				_login(in,sn);
 				return;
 			}
+			case 5 :{
+				_pushSpriteMotion(in,sn);
+				return;
+			}
 			case 4 :{
 				_closeUser(in,sn);
 				return;
@@ -34,6 +38,12 @@ public abstract class RpcClient {
 		buffer.writeInt(sn++);
 		buffer.writeString(name);
 		buffer.writeString(password);
+		channel.writeRpcOutput(buffer);
+	}
+	public  void pushSpriteMotion() throws Exception{
+		RpcOutput buffer=new RpcOutputNettyImpl();
+		buffer.writeInt(5);
+		buffer.writeInt(sn++);
 		channel.writeRpcOutput(buffer);
 	}
 	public  void closeUser(String name) throws Exception{
@@ -61,6 +71,12 @@ public abstract class RpcClient {
 		result.read(in);
 		loginCallback(state,result);
 	}
+	private void _pushSpriteMotion(RpcInput in,int sn) throws Exception{
+		int state=in.readInt();
+		SpriteMotionVO result=new SpriteMotionVO();
+		result.read(in);
+		pushSpriteMotionCallback(state,result);
+	}
 	private void _closeUser(RpcInput in,int sn) throws Exception{
 		int state=in.readInt();
 		UserVO result=new UserVO();
@@ -79,6 +95,8 @@ public abstract class RpcClient {
 		pushSpriteAddCallback(state,result);
 	}
 	public abstract void loginCallback(int state,UserVO result)throws Exception;
+
+	public abstract void pushSpriteMotionCallback(int state,SpriteMotionVO result)throws Exception;
 
 	public abstract void closeUserCallback(int state,UserVO result)throws Exception;
 

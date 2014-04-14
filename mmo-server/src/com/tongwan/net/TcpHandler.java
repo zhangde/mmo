@@ -35,13 +35,15 @@ public class TcpHandler extends SimpleChannelHandler {
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
 		log.debug("channelClosed");
+		
+		long playerId=(long) e.getChannel().getAttachment();
+		//sessionManage.removeChannel(e.getChannel());
 	}
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
 		log.debug("channelConnected");
-		group.add(ctx.getChannel());
-		sessionManage.putToOnlineList(1, new NettyChannelImpl(e.getChannel()));
+		sessionManage.putToOnlineList(e.getChannel().getId(), new NettyChannelImpl(e.getChannel()));
 		
 	}
 	

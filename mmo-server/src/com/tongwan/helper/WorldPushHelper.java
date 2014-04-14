@@ -1,5 +1,7 @@
 package com.tongwan.helper;
 
+import gen.data.SpriteMotionVO;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.tongwan.common.net.ResultObject;
 import com.tongwan.common.path.Point;
 import com.tongwan.common.thread.NameThreadFactory;
-import com.tongwan.domain.map.Sprite;
+import com.tongwan.domain.sprite.Sprite;
 import com.tongwan.manage.SessionManage;
 
 /**
@@ -33,11 +35,24 @@ public class WorldPushHelper {
 		instatnce=this;
 	}
 	public static void pushMotion(Sprite sprite,List<Point> path){
+		final ResultObject<SpriteMotionVO> result=ResultObject.valueOf(5);
+		SpriteMotionVO vo = new SpriteMotionVO();
+		vo.id=sprite.getId();
+		vo.spriteType = sprite.getType().ordinal();
+		vo.path=new int[path.size()*2];
+		int i=0;
+		for(Point p:path){
+			vo.path[i]=p.x;
+			i++;
+			vo.path[i]=p.y;
+			i++;
+		}
+		result.setValue(vo);
 		EXECUTOR.submit(new Runnable() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				//instatnce.sessionManage.writeToAllOnline(result);
+				instatnce.sessionManage.writeToAllOnline(result);
 			}
 		});
 	}

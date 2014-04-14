@@ -7,10 +7,11 @@ import org.springframework.stereotype.Component;
 
 import com.tongwan.common.net.ResultObject;
 import com.tongwan.domain.map.GameMap;
-import com.tongwan.domain.map.Sprite;
+import com.tongwan.domain.sprite.Sprite;
 import com.tongwan.helper.PushHelper;
 import com.tongwan.service.GameMapService;
 
+import gen.data.SpriteMotionVO;
 import gen.data.SpriteVO;
 import gen.data.UserVO;
 import gen.service.RpcService;
@@ -45,6 +46,7 @@ public class RpcServiceImpl extends RpcService{
 			v.id=s.getId();
 			v.x=s.getX();
 			v.y=s.getY();
+			v.spriteType=s.getType().ordinal();
 			ResultObject r=ResultObject.valueOf(2);
 			r.setValue(v);
 			PushHelper.push(r);
@@ -66,6 +68,12 @@ public class RpcServiceImpl extends RpcService{
 
 	@Override
 	public ResultObject<SpriteVO> pushSpriteAdd() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResultObject<SpriteMotionVO> pushSpriteMotion() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

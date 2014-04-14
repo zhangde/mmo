@@ -105,6 +105,9 @@ public class RpcOutputNettyImpl implements RpcOutput{
 		}else if(componentType.equals(byte[][].class)){
 			byte[][] bytes=(byte[][]) array;
 			writeByteArray2(bytes);
+		}else if(componentType.equals(int[].class)){
+			int[] data=(int[]) array;
+			writeIntArray(data);
 		}
 	}
 	public void writeByteArray(byte[] bytes){
@@ -118,6 +121,13 @@ public class RpcOutputNettyImpl implements RpcOutput{
 			buffer.writeBytes(bytes[i]);
 		}
 	}
+	@Override
+	public void writeIntArray(int[] v) {
+		writeInt(v.length);
+		for(int i=0;i<v.length;i++){
+			buffer.writeInt(v[i]);
+		}
+	}
 	public void writeRpcVo(RpcVo v){
 		v.writeTo(this);
 	}
@@ -129,4 +139,5 @@ public class RpcOutputNettyImpl implements RpcOutput{
 		buffer.readBytes(bytes);
 		return bytes;
 	}
+	
 }
