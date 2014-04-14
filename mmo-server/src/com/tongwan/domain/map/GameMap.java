@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.tongwan.common.path.AStar;
 import com.tongwan.common.path.MaskTypes;
@@ -20,7 +21,9 @@ import com.tongwan.domain.sprite.Sprite;
  * @date 2014年1月4日
  */
 public class GameMap {
+	private static final AtomicLong AUTO_GAMEMAP_ID=new AtomicLong();
 	private static final Random RANDOM=new Random();
+	private int id;
 	private int column;
 	private int rows;
 	private byte[][] data;
@@ -57,6 +60,17 @@ public class GameMap {
 	 */
 	public Set<Sprite> getAllMonster(){
 		return spires[SpireType.MONSTER.ordinal()];
+	}
+	/**
+	 * 是否在当前地图
+	 * @param sprite
+	 * @return
+	 */
+	public boolean inThisMap(Sprite sprite){
+		if(id == sprite.getGameMap().getId()){
+			return true;
+		}
+		return false;
 	}
 	/**
 	 * 得到随机巡逻路径
@@ -135,6 +149,9 @@ public class GameMap {
 	 */
 	public byte[][] getData() {
 		return data;
+	}
+	public int getId() {
+		return id;
 	}
 	
 	

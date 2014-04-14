@@ -1,7 +1,11 @@
 package com.tongwan.domain.sprite;
 
 import com.tongwan.domain.map.GameMap;
-
+/**
+ * 基础抽象精灵，所有在地图可显示对象的父类
+ * @author zhangde
+ * @date 2014年4月14日
+ */
 public abstract class BaseSprite implements Sprite{
 
 	/** 唯一标识 */

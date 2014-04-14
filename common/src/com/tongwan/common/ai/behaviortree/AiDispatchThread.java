@@ -32,7 +32,7 @@ public class AiDispatchThread extends Thread{
 				}
 			}
 			try {
-				sleep(500);
+				sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

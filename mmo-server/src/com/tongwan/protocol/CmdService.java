@@ -23,8 +23,10 @@ public class CmdService extends Vos{
 		public ResultObject<UserVO> closeUser(String name);
 		@RpcMethodTag(cmd=3,params={},remark="加载地图")
 		public ResultObject<byte[][]> loadGameMap();
-		@RpcMethodTag(cmd=2,params={},remark="推送精灵变更")
+		@RpcMethodTag(cmd=2,params={},remark="推送添加地图精灵")
 		public ResultObject<SpriteVO> pushSpriteAdd();
+		@RpcMethodTag(cmd=5,params={},remark="推送地图精灵开始移动")
+		public ResultObject<SpriteMotionVO> pushSpriteMotion();
 	}
 	/**
 	 * @param args

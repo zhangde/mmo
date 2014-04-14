@@ -19,7 +19,15 @@ public class Vos {
 	}
 	public class SpriteVO{
 		public long id;
+		public int spriteType;
 		public int x;
 		public int y;
+		public int[] keys;
+		public Object[] values;
+	}
+	public class SpriteMotionVO{
+		public long id;
+		public int spriteType;
+		public int[] path;
 	}
 }

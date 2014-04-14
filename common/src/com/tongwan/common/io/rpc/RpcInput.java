@@ -16,5 +16,6 @@ public interface RpcInput {
 	public boolean readBoolean();
 	public <T> List<T> readList(Class<T> gType);
 	public byte[][] readByteArray2();
+	public int[] readIntArray();
 	public <T> T readObject(Class<T> clazz);
 }

@@ -92,5 +92,17 @@ public class RpcInputNettyImpl implements RpcInput{
 		}
 		return null;
 	}
+	@Override
+	public int[] readIntArray() {
+		int size=readInt();
+		if(size>0){
+			int[] result=new int[size];
+			for(int i=0;i<size;i++){
+				result[i]=readInt();
+			}
+			return  result;
+		}
+		return null;
+	}
 	
 }

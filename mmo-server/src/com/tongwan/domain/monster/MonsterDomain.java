@@ -14,23 +14,23 @@ import com.tongwan.common.ai.behaviortree.BehaviorTree;
 import com.tongwan.common.path.Point;
 import com.tongwan.domain.map.GameMap;
 import com.tongwan.domain.sprite.BaseSprite;
+import com.tongwan.domain.sprite.CombatSprite;
 import com.tongwan.domain.sprite.SpireType;
 import com.tongwan.domain.sprite.Sprite;
 import com.tongwan.helper.FightHelper;
 import com.tongwan.helper.WorldPushHelper;
 import com.tongwan.net.TcpHandler;
+import com.tongwan.template.MonsterTemplate;
 
 /**
  * @author zhangde
  * @date 2013年12月25日
  */
-public class MonsterDomain extends BaseSprite implements BehaviorActor{
+public class MonsterDomain extends CombatSprite implements BehaviorActor{
 	private static Log LOG = LogFactory.getLog(MonsterDomain.class);
 	private static final AtomicLong AUTO_MONSTER_ID=new AtomicLong();
-	/** 基本配置ID */
-	private int baseId;
-	/** 战斗数据模型 */
-	private MonsterBattle battle;
+	/** 基本配置 */
+	private MonsterTemplate monsterTemplate;
 	/** 当前怪物的AI行为树 */
 	private BehaviorTree behaviorTree;
 	
@@ -45,11 +45,12 @@ public class MonsterDomain extends BaseSprite implements BehaviorActor{
 	/** 是否正在移动 */
 	private boolean isMoving;
 	/** 当前移动路径 */
-	private List<Point> currentPath;
-	public MonsterDomain(int baseId,MonsterBattle battle,int homeX,int homeY,int patrolRadius,BehaviorTree behaviorTree,GameMap gameMap){
-		super(AUTO_MONSTER_ID.getAndIncrement(),gameMap,homeX,homeY);
-		this.baseId=baseId;
-		this.battle=battle;
+	private List<Point> currentPath=null;
+	/** 当前攻击目标 */
+	private CombatSprite attackTarget=null;
+	public MonsterDomain(MonsterTemplate template,MonsterBattle battle,int homeX,int homeY,int patrolRadius,BehaviorTree behaviorTree,GameMap gameMap){
+		super(AUTO_MONSTER_ID.getAndIncrement(),gameMap,homeX,homeY,battle);
+		this.monsterTemplate=template;
 		this.behaviorTree=behaviorTree;
 		this.homeX=homeX;
 		this.homeY=homeY;
@@ -60,13 +61,28 @@ public class MonsterDomain extends BaseSprite implements BehaviorActor{
 	 * @return
 	 */
 	private boolean isDead(){
-		return battle.isDead();
+		return getBattle().isDead();
 	}
 	/**
 	 * 是否到达复活时间
 	 * @return
 	 */
 	private boolean isTimeToResurrection(){
+		return true;
+	}
+	/**
+	 * 寻找敌人
+	 * @return
+	 */
+	private boolean findTheEnemy(){
+		boolean existAttackTarget = attackTarget!=null;//是否存在攻击目标
+		boolean targetAlive=!attackTarget.getBattle().isDead();//攻击目标是否活着
+		boolean targetInThisMap=getGameMap().inThisMap(attackTarget);//攻击目标是否在当前地图
+		if(existAttackTarget && targetAlive && targetInThisMap){
+			attackTarget=null;
+			return false;
+		}
+		
 		return true;
 	}
 	/**
@@ -160,10 +176,13 @@ public class MonsterDomain extends BaseSprite implements BehaviorActor{
 		return false;
 	}
 
-	public MonsterBattle getBattle() {
-		return battle;
+	public MonsterBattle getMonsterBattle() {
+		return (MonsterBattle) getBattle();
 	}
-
+	
+	public MonsterTemplate getMonsterTemplate() {
+		return monsterTemplate;
+	}
 	@Override
 	public SpireType getType() {
 		return SpireType.MONSTER;

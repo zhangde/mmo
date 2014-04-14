@@ -64,6 +64,13 @@ public class SessionManage {
 		}
 	}
 	/**
+	 * 移出玩家channel
+	 * @param playerId
+	 */
+	public void removeChannel(long playerId){
+		ONLINE_CHANNELS.remove(playerId);
+	}
+	/**
 	 * 是否在线
 	 * @param playerId
 	 * @return
