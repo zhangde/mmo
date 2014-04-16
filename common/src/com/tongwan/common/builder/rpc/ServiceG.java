@@ -64,9 +64,9 @@ public class ServiceG {
 		for(Method m:ms){
 			methods.add(new RpcMethod(m));
 		}
-		server("gen.service",methods);
+		server(0,"gen.service",clazz.getSimpleName(),methods);
 		client4Java("gen.client", methods);
-		client4CSharp(RpcInterface.class,"gen.client",methods);
+		client4CSharp(0,RpcInterface.class,"gen.client",methods);
 		clientJavaScript("gen", methods);
 	}
 	public static void client4CSharpDataStruct(String pg,Class g) throws Exception{
@@ -115,7 +115,7 @@ public class ServiceG {
 			}
 		}
 	}
-	public static void server(String pg,List<RpcMethod> methods) throws Exception{
+	public static void server(int module,String pg,String className,List<RpcMethod> methods) throws Exception{
 		StringBuffer sb=new StringBuffer();
 		l(sb,"package %s;",pg);
 		
@@ -123,10 +123,13 @@ public class ServiceG {
 		l(sb,"import com.tongwan.common.net.ResultObject;");
 		l(sb,"import com.tongwan.common.net.channel.BaseChannel;");
 		l(sb,"import com.tongwan.common.io.rpc.*;");
-		l(sb,"public abstract class RpcService {");
-		l(sb,"	public void process(BaseChannel channel,RpcInput in) throws Exception{");
+		l(sb,"public abstract class %s extends com.tongwan.net.Handler{",className);
+		l(sb,"	protected int getModule(){");
+		l(sb,"		return %d;",module);
+		l(sb,"	}");
+		l(sb,"	public void process(int cmd,BaseChannel channel,RpcInput in) throws Exception{");
 //		l(sb,"		Map parame=channel.getParame();");
-		l(sb,"		int cmd=in.readInt(); //指令编号");
+//		l(sb,"		int cmd=in.readInt(); //指令编号");
 		l(sb,"		int sn=in.readInt();  //指令序号");
 		l(sb,"		switch(cmd){");
 		for(RpcMethod m:methods){
@@ -164,7 +167,7 @@ public class ServiceG {
 		if(!file.exists()){
 			file.mkdirs();
 		}
-		File clazzFile=new File("src/"+path+"/RpcService.java");
+		File clazzFile=new File("src/"+path+"/"+className+".java");
 		if(!clazzFile.exists()){
 			clazzFile.createNewFile();
 		}
@@ -227,7 +230,7 @@ public class ServiceG {
 		
 	}
 	
-	public static void client4CSharp(Class clazz,String pg,List<RpcMethod> methods) throws Exception{
+	public static void client4CSharp(int module,Class clazz,String pg,List<RpcMethod> methods) throws Exception{
 		StringBuffer sb=new StringBuffer();
 		//l(sb,"package %s;",pg);
 		
@@ -250,7 +253,7 @@ public class ServiceG {
 		l(sb,"	}");
 		//请求方法
 		for(RpcMethod m:methods){
-			l(sb,m.toClient4CSharp());
+			l(sb,m.toClient4CSharp(module));
 		}
 		//内部解析数据格式方法
 		for(RpcMethod m:methods){
@@ -357,6 +360,8 @@ public class ServiceG {
 				l(sb,"		buffer.writeList(%s);",f.getName());
 			}else if(isIntArray(t)){
 				l(sb,"		buffer.writeIntArray(%s);",f.getName());
+			}else if(isObjectArray(t)){
+				l(sb,"		buffer.writeObjectArray(%s);",f.getName());
 			}else{
 				l(sb,"		%s.writeTo(buffer);",f.getName());
 			}
@@ -439,6 +444,8 @@ public class ServiceG {
 			}else{
 				if(t.equals("String")){
 					t="string";
+				}else if(isObjectArray(t)){
+					t="object[]";
 				}
 				l(sb,"		public %s %s;",t,f.getName());
 			}
@@ -475,6 +482,8 @@ public class ServiceG {
 				l(sb,"			buffer.writeList(%s);",f.getName());
 			}else if(isIntArray(t)){
 				l(sb,"			buffer.writeIntArray(%s);",f.getName());
+			}else if(isObjectArray(t)){
+				//暂不支持
 			}else{
 				l(sb,"			%s.writeTo(buffer);",f.getName());
 			}
@@ -500,6 +509,8 @@ public class ServiceG {
 				l(sb,"			%s=input.readDouble();",f.getName());
 			}else if(isIntArray(t)){
 				l(sb,"			%s=input.readIntArray();",f.getName());
+			}else if(isObjectArray(t)){
+				l(sb,"			%s=input.readObjectArray();",f.getName());
 			}else if(isList(t)){
 				l(sb,"			int size=input.readInt();");
 				l(sb,"			%s=new List<%s>();",f.getName(),generics);

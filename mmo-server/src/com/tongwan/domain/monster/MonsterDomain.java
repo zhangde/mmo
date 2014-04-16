@@ -75,14 +75,14 @@ public class MonsterDomain extends CombatSprite implements BehaviorActor{
 	 * @return
 	 */
 	private boolean findTheEnemy(){
-		boolean existAttackTarget = attackTarget!=null;//是否存在攻击目标
-		boolean targetAlive=!attackTarget.getBattle().isDead();//攻击目标是否活着
-		boolean targetInThisMap=getGameMap().inThisMap(attackTarget);//攻击目标是否在当前地图
-		if(existAttackTarget && targetAlive && targetInThisMap){
-			attackTarget=null;
-			return false;
-		}
-		
+//		boolean existAttackTarget = attackTarget!=null;//是否存在攻击目标
+//		boolean targetAlive=!attackTarget.getBattle().isDead();//攻击目标是否活着
+//		boolean targetInThisMap=getGameMap().inThisMap(attackTarget);//攻击目标是否在当前地图
+//		if(existAttackTarget && targetAlive && targetInThisMap){
+//			attackTarget=null;
+//			return false;
+//		}
+//		
 		return true;
 	}
 	/**
@@ -144,7 +144,7 @@ public class MonsterDomain extends CombatSprite implements BehaviorActor{
 	@Override
 	public boolean executeAction(String actionType) {
 		try{
-			//LOG.debug("action:"+actionType);
+			LOG.debug("action:"+actionType);
 			Method method=methods.get(actionType);
 			if(method==null){
 				method=this.getClass().getDeclaredMethod(actionType);
@@ -154,7 +154,7 @@ public class MonsterDomain extends CombatSprite implements BehaviorActor{
 			Object result=method.invoke(this);
 			return (boolean) result;
 		}catch(Exception e){
-			LOG.error("AI执行方法调用错误",e);
+			LOG.error("AI执行方法调用错误 "+actionType,e);
 		}
 		return false;
 	}
@@ -185,8 +185,7 @@ public class MonsterDomain extends CombatSprite implements BehaviorActor{
 	}
 	@Override
 	public SpriteType getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return SpriteType.MONSTER;
 	}
 	
 	

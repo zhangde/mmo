@@ -67,6 +67,9 @@ public class TypeX {
 	public static boolean isIntArray(String type){
 		return type.equals("int[]");
 	}
+	public static boolean isObjectArray(String type){
+		return type.equals("Object[]");
+	}
 	public static void main(String[] args) {
 		System.out.println(Integer.valueOf("1.0"));
 	}

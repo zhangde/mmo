@@ -11,4 +11,6 @@ public interface AttributeKey {
 	int HP = 100;
 	/** 攻击 */
 	int ATK= 101;
+	/** 生命上限 */
+	int HP_MAX=102;
 }

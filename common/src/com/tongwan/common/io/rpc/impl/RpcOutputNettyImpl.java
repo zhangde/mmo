@@ -11,6 +11,7 @@ import java.util.List;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
+import com.tongwan.common.io.rpc.MessageType;
 import com.tongwan.common.io.rpc.RpcOutput;
 import com.tongwan.common.io.rpc.RpcVo;
 
@@ -108,6 +109,9 @@ public class RpcOutputNettyImpl implements RpcOutput{
 		}else if(componentType.equals(int[].class)){
 			int[] data=(int[]) array;
 			writeIntArray(data);
+		}else if(componentType.equals(Object[].class)){
+			Object[] data=(Object[]) array;
+			writeObjectArray(data);
 		}
 	}
 	public void writeByteArray(byte[] bytes){
@@ -123,6 +127,10 @@ public class RpcOutputNettyImpl implements RpcOutput{
 	}
 	@Override
 	public void writeIntArray(int[] v) {
+		if(v==null){
+			writeInt(0);
+			return;
+		}
 		writeInt(v.length);
 		for(int i=0;i<v.length;i++){
 			buffer.writeInt(v[i]);
@@ -131,7 +139,32 @@ public class RpcOutputNettyImpl implements RpcOutput{
 	public void writeRpcVo(RpcVo v){
 		v.writeTo(this);
 	}
-	
+	@Override
+	public void writeObjectArray(Object[] v) {
+		if(v==null){
+			writeInt(0);
+			return;
+		}
+		writeInt(v.length);
+		for(int i=0;i<v.length;i++){
+			Object o = v[i];
+			if(o instanceof Integer){
+				buffer.writeByte(MessageType.TYPE_INT);
+				writeInt((int)o);
+			}else if(o instanceof String){
+				buffer.writeByte(MessageType.TYPE_STRING);
+				writeString((String)o);
+			}else if(o instanceof Long){
+				buffer.writeByte(MessageType.TYPE_LONG);
+				writeLong((long)o);
+			}else if(o instanceof Double){
+				buffer.writeByte(MessageType.TYPE_DOUBLE);
+				writeDouble((double)o);
+			}else if(o instanceof Boolean){
+				writeBoolean((Boolean)o);
+			}
+		}
+	}
 	public byte[] toByteArray(){
 //		buffer.discardReadBytes();
 		int offset=buffer.readableBytes();
@@ -139,5 +172,6 @@ public class RpcOutputNettyImpl implements RpcOutput{
 		buffer.readBytes(bytes);
 		return bytes;
 	}
+	
 	
 }

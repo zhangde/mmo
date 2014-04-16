@@ -14,6 +14,8 @@ public class MonsterTemplate implements Template{
 	private int level;
 	private int maxHp;
 	private int atk;
+	private int camp;
+	private int ailevel;
 	public int getId() {
 		return id;
 	}
@@ -28,6 +30,12 @@ public class MonsterTemplate implements Template{
 	}
 	public int getAtk() {
 		return atk;
+	}
+	public int getCamp() {
+		return camp;
+	}
+	public int getAilevel() {
+		return ailevel;
 	}
 	
 }

@@ -29,48 +29,6 @@ public class Vos{
 		}
 	}
 
-	public class SpriteMotionVO : RpcVo{
-		public long id;
-		public int spriteType;
-		public int[] path;
-		public void writeTo(RpcOutput buffer){
-			buffer.writeLong(id);
-			buffer.writeInt(spriteType);
-			buffer.writeIntArray(path);
-		
-		}
-		public void read(RpcInput input){
-			id=input.readLong();
-			spriteType=input.readInt();
-			path=input.readIntArray();
-		}
-	}
-
-	public class SpriteVO : RpcVo{
-		public long id;
-		public int spriteType;
-		public int x;
-		public int y;
-		public int[] keys;
-		public object[] values;
-		public void writeTo(RpcOutput buffer){
-			buffer.writeLong(id);
-			buffer.writeInt(spriteType);
-			buffer.writeInt(x);
-			buffer.writeInt(y);
-			buffer.writeIntArray(keys);
-		
-		}
-		public void read(RpcInput input){
-			id=input.readLong();
-			spriteType=input.readInt();
-			x=input.readInt();
-			y=input.readInt();
-			keys=input.readIntArray();
-			values=input.readObjectArray();
-		}
-	}
-
 	public class UserVO : RpcVo{
 		public int id;
 		public string name;

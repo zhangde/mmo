@@ -47,8 +47,9 @@ public class MonsterServiceImpl implements MonsterService,ApplicationListener<Ap
 		for(MonsterTemplate template:monsterTemplates){
 			MonsterBattle battle = new MonsterBattle();
 			battle.setHp(template.getMaxHp());
+			battle.setHpMax(template.getMaxHp());
 			battle.setAtk(template.getAtk());
-			MonsterDomain monster = new MonsterDomain(template, battle, 0, 0, 10, aiLevelService.get(1), gameMap);
+			MonsterDomain monster = new MonsterDomain(template, battle, 0, 0, 10, aiLevelService.get(template.getAilevel()), gameMap);
 			gameMap.join(monster);
 			monsterAction.addActor(monster);
 		}
@@ -79,13 +80,11 @@ public class MonsterServiceImpl implements MonsterService,ApplicationListener<Ap
 		for(int index=0;index<keys.length;index++){
 			int key=keys[index];
 			switch (key) {
-			case HP:
-				values[index] = battle.getAttribute(key);
-				break;
 			case NAME:
 				values[index] = template.getName();
 				break;
 			default:
+				values[index] = battle.getAttribute(key);
 				break;
 			}
 		}

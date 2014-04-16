@@ -6,11 +6,15 @@ public class SpriteVO implements RpcVo{
 	public int spriteType;
 	public int x;
 	public int y;
+	public int[] keys;
+	public Object[] values;
 	public void writeTo(RpcOutput buffer){
 		buffer.writeLong(id);
 		buffer.writeInt(spriteType);
 		buffer.writeInt(x);
 		buffer.writeInt(y);
+		buffer.writeIntArray(keys);
+		buffer.writeObjectArray(values);
 		
 	}
 	public void read(RpcInput in){
@@ -18,5 +22,7 @@ public class SpriteVO implements RpcVo{
 		spriteType=in.readInt();
 		x=in.readInt();
 		y=in.readInt();
+		keys=in.readIntArray();
+		values=in.readObject(Object[].class);
 	}
 }

@@ -1,7 +1,5 @@
 package com.tongwan.net;
 
-import gen.service.RpcService;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -14,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.tongwan.common.io.rpc.RpcInput;
-import com.tongwan.common.io.rpc.impl.RpcInputNettyImpl;
 import com.tongwan.common.net.channel.netty.NettyChannelImpl;
 import com.tongwan.manage.SessionManage;
 @Component
@@ -22,13 +19,13 @@ public class TcpHandler extends SimpleChannelHandler {
 	static Log log = LogFactory.getLog(TcpHandler.class);
 	public static final ChannelGroup group =new DefaultChannelGroup();
 	@Autowired
-	private RpcService service;
+	private ModuleDispatcher dispatcher;
 	@Autowired
 	private SessionManage sessionManage;
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx,final MessageEvent e) throws Exception {
 		log.debug("messageReceived");
-		service.process(new NettyChannelImpl(e.getChannel()), (RpcInput)e.getMessage());
+		dispatcher.dispatch(new NettyChannelImpl(e.getChannel()), (RpcInput)e.getMessage());
 	}
 	
 	@Override

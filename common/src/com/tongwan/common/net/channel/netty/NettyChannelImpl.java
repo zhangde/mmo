@@ -33,17 +33,21 @@ public class NettyChannelImpl implements BaseChannel {
 
 	@Override
 	public  void writeResultObject(ResultObject resultObject) {
-		RpcOutput out=new RpcOutputNettyImpl();
-		out.writeInt(resultObject.getCmd());
-		out.writeInt(resultObject.getResult());
-		out.writeObject(resultObject.getValue());
-		
-		byte[] bytes=out.toByteArray();
-		
-		ChannelBuffer buffer= ChannelBuffers.buffer(ByteOrder.LITTLE_ENDIAN, 4+bytes.length);
-		buffer.writeInt(bytes.length);
-		buffer.writeBytes(bytes);
-		channel.write(buffer);
+		try{
+			RpcOutput out=new RpcOutputNettyImpl();
+			out.writeInt(resultObject.getCmd());
+			out.writeInt(resultObject.getResult());
+			out.writeObject(resultObject.getValue());
+			
+			byte[] bytes=out.toByteArray();
+			
+			ChannelBuffer buffer= ChannelBuffers.buffer(ByteOrder.LITTLE_ENDIAN, 4+bytes.length);
+			buffer.writeInt(bytes.length);
+			buffer.writeBytes(bytes);
+			channel.write(buffer);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	

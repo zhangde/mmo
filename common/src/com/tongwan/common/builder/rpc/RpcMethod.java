@@ -106,7 +106,7 @@ public class RpcMethod {
 		return sb.toString();
 	}
 	
-	public String toClient4CSharp(){
+	public String toClient4CSharp(int module){
 		StringBuffer sb=new StringBuffer();
 		sb.append("	public  void ").append(m.getName()).append("(");
 		for(int i=0;i<parameterTypes.length;i++){
@@ -123,7 +123,8 @@ public class RpcMethod {
 		}
 		sb.append("){\r\n");
 		l(sb,"		RpcOutput buffer=new RpcOutput();");
-		l(sb,"		buffer.writeInt(%s);",getTag().cmd());
+		l(sb,"		buffer.writeInt(%s);//module",module);
+		l(sb,"		buffer.writeInt(%s);//cmd",getTag().cmd());
 		l(sb,"		buffer.writeInt(sn++);");
 		for(int i=0;i<parameterTypes.length;i++){
 			String t=parameterTypes[i].toString();

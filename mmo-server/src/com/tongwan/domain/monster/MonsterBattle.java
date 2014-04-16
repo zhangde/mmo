@@ -9,6 +9,7 @@ import com.tongwan.domain.sprite.Battle;
  */
 public class MonsterBattle implements Battle{
 	private int hp;
+	private int hpMax;
 	private int atk;
 	
 	public boolean isDead(){
@@ -34,12 +35,19 @@ public class MonsterBattle implements Battle{
 	public void setAtk(int atk) {
 		this.atk = atk;
 	}
+	
+	public int getHpMax() {
+		return hpMax;
+	}
+	public void setHpMax(int hpMax) {
+		this.hpMax = hpMax;
+	}
 	@Override
 	public int getAttribute(int key) {
 		switch (key) {
 			case HP: return hp;
 			case ATK: return atk;
-	
+			case HP_MAX:return hpMax;
 			default:
 				break;
 		}

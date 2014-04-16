@@ -1,4 +1,4 @@
-package com.tongwan.net;
+package com.tongwan.protocol.module;
 
 import java.util.Set;
 
@@ -15,26 +15,14 @@ import com.tongwan.service.SpriteService;
 
 import gen.data.SpriteMotionVO;
 import gen.data.SpriteVO;
-import gen.data.UserVO;
-import gen.service.RpcService;
+import gen.service.MapInterface;
 
-/**
- * @author zhangde
- *
- * @date 2014年1月24日
- */
 @Component
-public class RpcServiceImpl extends RpcService{
+public class MapInterfaceImpl extends MapInterface{
 	@Autowired
 	private GameMapService gameMapService;
 	@Autowired
 	private SpriteService spriteService;
-	@Override
-	public ResultObject<UserVO> closeUser(String name) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public ResultObject<byte[][]> loadGameMap() throws Exception {
 		GameMap map=gameMapService.getGameMap(1);
@@ -57,18 +45,6 @@ public class RpcServiceImpl extends RpcService{
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see gen.service.RpcService#login(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public ResultObject<UserVO> login(String name, String password)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
 	@Override
 	public ResultObject<SpriteVO> pushSpriteAdd() throws Exception {
 		// TODO Auto-generated method stub
@@ -80,5 +56,4 @@ public class RpcServiceImpl extends RpcService{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

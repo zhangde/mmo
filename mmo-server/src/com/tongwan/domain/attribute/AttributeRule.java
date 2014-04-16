@@ -7,5 +7,5 @@ import static com.tongwan.domain.attribute.AttributeKey.*;
  * @date 2014年4月14日
  */
 public interface AttributeRule {
-	int[] MONSTER_BASE={NAME,HP};
+	int[] MONSTER_BASE={NAME,HP,HP_MAX};
 }
