@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.tongwan.common.path.AStar;
 import com.tongwan.common.path.MaskTypes;
 import com.tongwan.common.path.Point;
-import com.tongwan.domain.sprite.SpireType;
 import com.tongwan.domain.sprite.Sprite;
+import com.tongwan.type.SpriteType;
 
 
 /**
@@ -33,7 +33,7 @@ public class GameMap {
 		this.data=data;
 		this.column=data.length;
 		this.rows=data[0].length;
-		spires=new Set[SpireType.values().length];
+		spires=new Set[SpriteType.values().length];
 		for(int i=0;i<spires.length;i++){
 			spires[i]=Collections.synchronizedSet(new HashSet<Sprite>());
 		}
@@ -59,7 +59,7 @@ public class GameMap {
 	 * @return
 	 */
 	public Set<Sprite> getAllMonster(){
-		return spires[SpireType.MONSTER.ordinal()];
+		return spires[SpriteType.MONSTER.ordinal()];
 	}
 	/**
 	 * 是否在当前地图

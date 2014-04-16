@@ -15,12 +15,12 @@ import com.tongwan.common.path.Point;
 import com.tongwan.domain.map.GameMap;
 import com.tongwan.domain.sprite.BaseSprite;
 import com.tongwan.domain.sprite.CombatSprite;
-import com.tongwan.domain.sprite.SpireType;
 import com.tongwan.domain.sprite.Sprite;
 import com.tongwan.helper.FightHelper;
 import com.tongwan.helper.WorldPushHelper;
 import com.tongwan.net.TcpHandler;
 import com.tongwan.template.MonsterTemplate;
+import com.tongwan.type.SpriteType;
 
 /**
  * @author zhangde
@@ -184,8 +184,10 @@ public class MonsterDomain extends CombatSprite implements BehaviorActor{
 		return monsterTemplate;
 	}
 	@Override
-	public SpireType getType() {
-		return SpireType.MONSTER;
+	public SpriteType getType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
+	
 	
 }

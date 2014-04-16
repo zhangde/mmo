@@ -1,6 +1,7 @@
 package com.tongwan.domain.sprite;
 
 import com.tongwan.domain.map.GameMap;
+import com.tongwan.type.SpriteType;
 
 /**
  * 地图可见精灵抽象接口
@@ -13,5 +14,5 @@ public interface Sprite {
 	public int getX();
 	public int getY();
 	public GameMap getGameMap();
-	public SpireType getType();
+	public SpriteType getType();
 }
