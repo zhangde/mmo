@@ -50,9 +50,9 @@ public class RpcServiceImpl extends RpcService{
 			v.spriteType=s.getType().ordinal();
 			v.keys=AttributeRule.MONSTER_BASE;
 			v.values=spriteService.attributes(s, AttributeRule.MONSTER_BASE);
-			ResultObject r=ResultObject.valueOf(2);
-			r.setValue(v);
-			PushHelper.push(r);
+//			ResultObject r=ResultObject.valueOf(2);
+//			r.setValue(v);
+//			PushHelper.push(r);
 		}
 		return result;
 	}

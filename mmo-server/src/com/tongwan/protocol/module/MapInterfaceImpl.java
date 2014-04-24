@@ -24,11 +24,18 @@ public class MapInterfaceImpl extends MapInterface{
 	@Autowired
 	private SpriteService spriteService;
 	@Override
-	public ResultObject<byte[][]> loadGameMap() throws Exception {
+	protected ResultObject<byte[][]> loadGameMap() throws Exception {
 		GameMap map=gameMapService.getGameMap(1);
 		ResultObject<byte[][]> result=new ResultObject<>();
 		result.setValue(map.getData());
 		
+		
+		return result;
+	}
+	
+	@Override
+	protected void loadGameMapComplete() throws Exception {
+		GameMap map=gameMapService.getGameMap(1);
 		Set<Sprite> monsterSet=map.getAllMonster();
 		for(Sprite s:monsterSet){
 			SpriteVO v=new SpriteVO();
@@ -38,22 +45,11 @@ public class MapInterfaceImpl extends MapInterface{
 			v.spriteType=s.getType().ordinal();
 			v.keys=AttributeRule.MONSTER_BASE;
 			v.values=spriteService.attributes(s, AttributeRule.MONSTER_BASE);
-			ResultObject r=ResultObject.valueOf(2);
+			ResultObject r=MapInterface.GetspriteAddResultObject();
 			r.setValue(v);
 			PushHelper.push(r);
 		}
-		return result;
 	}
 
-	@Override
-	public ResultObject<SpriteVO> pushSpriteAdd() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ResultObject<SpriteMotionVO> pushSpriteMotion() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

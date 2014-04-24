@@ -15,7 +15,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface RpcMethodTag {
+	/**指令编号 */
 	int cmd();
+	/** 是否需要推送 */
+	RPCTMode mode();
+	/** 参数名称 */
 	String[] params();
+	/** 注释*/
 	String remark() default "";
 }

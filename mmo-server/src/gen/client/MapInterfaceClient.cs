@@ -7,62 +7,55 @@ public abstract class MapInterfaceClient {
 	public void dispath(RpcInput input){
 		int cmd=input.readInt();
 		switch(cmd){
-			case 2 :{
-				_pushSpriteAdd(input,sn);
-				return;
-			}
 			case 1 :{
 				_loadGameMap(input,sn);
 				return;
 			}
+			case 2 :{
+				_spriteAdd(input,sn);
+				return;
+			}
 			case 3 :{
-				_pushSpriteMotion(input,sn);
+				_spriteMotion(input,sn);
 				return;
 			}
 		}
 	}
-	public  void pushSpriteAdd(){
-		RpcOutput buffer=new RpcOutput();
-		buffer.writeInt(2);
-		buffer.writeInt(2);
-		buffer.writeInt(sn++);
-		channel.writeRpcOutput(buffer);
-	}
 	public  void loadGameMap(){
 		RpcOutput buffer=new RpcOutput();
-		buffer.writeInt(2);
-		buffer.writeInt(1);
+		buffer.writeInt(2);//module
+		buffer.writeInt(1);//cmd
 		buffer.writeInt(sn++);
 		channel.writeRpcOutput(buffer);
 	}
-	public  void pushSpriteMotion(){
+	public  void loadGameMapComplete(){
 		RpcOutput buffer=new RpcOutput();
-		buffer.writeInt(2);
-		buffer.writeInt(3);
+		buffer.writeInt(2);//module
+		buffer.writeInt(4);//cmd
 		buffer.writeInt(sn++);
 		channel.writeRpcOutput(buffer);
-	}
-	private void _pushSpriteAdd(RpcInput input,int sn){
-		int state=input.readInt();
-		Vos.SpriteVO result=new Vos.SpriteVO();
-		result.read(input);
-		pushSpriteAddCallback(state,result);
 	}
 	private void _loadGameMap(RpcInput input,int sn){
 		int state=input.readInt();
 		byte[][] result=input.readByteArray2();
 		loadGameMapCallback(state,result);
 	}
-	private void _pushSpriteMotion(RpcInput input,int sn){
+	private void _spriteAdd(RpcInput input,int sn){
+		int state=input.readInt();
+		Vos.SpriteVO result=new Vos.SpriteVO();
+		result.read(input);
+		spriteAddCallback(state,result);
+	}
+	private void _spriteMotion(RpcInput input,int sn){
 		int state=input.readInt();
 		Vos.SpriteMotionVO result=new Vos.SpriteMotionVO();
 		result.read(input);
-		pushSpriteMotionCallback(state,result);
+		spriteMotionCallback(state,result);
 	}
-	public abstract void pushSpriteAddCallback(int state,Vos.SpriteVO result);
+	protected abstract void loadGameMapCallback(int state,byte[][] result);
 
-	public abstract void loadGameMapCallback(int state,byte[][] result);
+	protected abstract void spriteAddCallback(int state,Vos.SpriteVO result);
 
-	public abstract void pushSpriteMotionCallback(int state,Vos.SpriteMotionVO result);
+	protected abstract void spriteMotionCallback(int state,Vos.SpriteMotionVO result);
 
 }

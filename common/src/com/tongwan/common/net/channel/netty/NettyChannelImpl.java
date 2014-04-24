@@ -35,6 +35,7 @@ public class NettyChannelImpl implements BaseChannel {
 	public  void writeResultObject(ResultObject resultObject) {
 		try{
 			RpcOutput out=new RpcOutputNettyImpl();
+			out.writeInt(resultObject.getModule());
 			out.writeInt(resultObject.getCmd());
 			out.writeInt(resultObject.getResult());
 			out.writeObject(resultObject.getValue());

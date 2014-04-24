@@ -10,37 +10,42 @@ public abstract class MapInterface extends com.tongwan.net.Handler{
 	public void process(int cmd,BaseChannel channel,RpcInput in) throws Exception{
 		int sn=in.readInt();  //指令序号
 		switch(cmd){
-			case 2 :{
-				_pushSpriteAdd(channel,in,sn);
-				return;
-			}
 			case 1 :{
 				_loadGameMap(channel,in,sn);
 				return;
 			}
-			case 3 :{
-				_pushSpriteMotion(channel,in,sn);
+			case 4 :{
+				_loadGameMapComplete(channel,in,sn);
 				return;
 			}
 		}
 		throw new RuntimeException(" cmd: " + cmd + " not found processor.");
 	}
-	public void _pushSpriteAdd(BaseChannel channel,RpcInput in,int sn) throws Exception{
-		ResultObject<SpriteVO> result=pushSpriteAdd();
-		result.setCmd(2);
-		channel.writeResultObject(result);
-	}
 	public void _loadGameMap(BaseChannel channel,RpcInput in,int sn) throws Exception{
 		ResultObject<byte[][]> result=loadGameMap();
+		result.setModule(2);
 		result.setCmd(1);
 		channel.writeResultObject(result);
 	}
-	public void _pushSpriteMotion(BaseChannel channel,RpcInput in,int sn) throws Exception{
-		ResultObject<SpriteMotionVO> result=pushSpriteMotion();
-		result.setCmd(3);
-		channel.writeResultObject(result);
+	public void _loadGameMapComplete(BaseChannel channel,RpcInput in,int sn) throws Exception{
+		loadGameMapComplete();
 	}
-	public abstract ResultObject<SpriteVO> pushSpriteAdd() throws Exception;
-	public abstract ResultObject<byte[][]> loadGameMap() throws Exception;
-	public abstract ResultObject<SpriteMotionVO> pushSpriteMotion() throws Exception;
+	protected abstract ResultObject<byte[][]> loadGameMap() throws Exception;
+	protected abstract void loadGameMapComplete() throws Exception;
+	/**
+	* 得到推送添加地图精灵(主动推送的结构)
+	*/
+	public static ResultObject<SpriteVO> GetspriteAddResultObject(){
+		ResultObject<SpriteVO> result=ResultObject.valueOf(2,2);
+		return result;
+	}
+
+	/**
+	* 得到推送地图精灵开始移动(主动推送的结构)
+	*/
+	public static ResultObject<SpriteMotionVO> GetspriteMotionResultObject(){
+		ResultObject<SpriteMotionVO> result=ResultObject.valueOf(2,3);
+		return result;
+	}
+
 }

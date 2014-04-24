@@ -1,6 +1,7 @@
 package com.tongwan.helper;
 
 import gen.data.SpriteMotionVO;
+import gen.service.MapInterface;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -35,7 +36,7 @@ public class WorldPushHelper {
 		instatnce=this;
 	}
 	public static void pushMotion(Sprite sprite,List<Point> path){
-		final ResultObject<SpriteMotionVO> result=ResultObject.valueOf(5);
+		final ResultObject<SpriteMotionVO> result=MapInterface.GetspriteMotionResultObject();
 		SpriteMotionVO vo = new SpriteMotionVO();
 		vo.id=sprite.getId();
 		vo.spriteType = sprite.getType().ordinal();

@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.tongwan.common.builder.rpc.RpcMethod;
 import com.tongwan.common.builder.rpc.RpcMethodTag;
+import com.tongwan.common.builder.rpc.RPCTMode;
 import com.tongwan.common.builder.rpc.ServiceG;
 import com.tongwan.common.net.ResultObject;
 
@@ -19,20 +20,22 @@ public class Cmd extends Vos{
 	
 	interface UserInterface{
 		final static int module=Module.USER;
-		@RpcMethodTag(cmd=1,params={"name","password"},remark="登陆")
-		public ResultObject<UserVO> login(String name,String password);
-		@RpcMethodTag(cmd=2,params={"name"},remark="封号")
-		public ResultObject<UserVO> closeUser(String name);
+//		@RpcMethodTag(cmd=1,push=false,params={"name","password"},remark="登陆")
+//		public ResultObject<UserVO> login(String name,String password);
+//		@RpcMethodTag(cmd=2,push=false,params={"name"},remark="封号")
+//		public ResultObject<UserVO> closeUser(String name);
 		
 	}
 	interface MapInterface{
 		final static int module=Module.MAP;
-		@RpcMethodTag(cmd=1,params={},remark="加载地图")
+		@RpcMethodTag(cmd=1,mode=RPCTMode.SEND_RETURN,params={},remark="加载地图")
 		public ResultObject<byte[][]> loadGameMap();
-		@RpcMethodTag(cmd=2,params={},remark="推送添加地图精灵")
-		public ResultObject<SpriteVO> pushSpriteAdd();
-		@RpcMethodTag(cmd=3,params={},remark="推送地图精灵开始移动")
-		public ResultObject<SpriteMotionVO> pushSpriteMotion();
+		@RpcMethodTag(cmd=4,mode=RPCTMode.ONLY_SEND,params={},remark="加载地图成功")
+		public void loadGameMapComplete();
+		@RpcMethodTag(cmd=2,mode=RPCTMode.ONLY_PUSH,params={},remark="推送添加地图精灵")
+		public ResultObject<SpriteVO> spriteAdd();
+		@RpcMethodTag(cmd=3,mode=RPCTMode.ONLY_PUSH,params={},remark="推送地图精灵开始移动")
+		public ResultObject<SpriteMotionVO> spriteMotion();
 	}
 	/**
 	 * @param args

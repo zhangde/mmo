@@ -7,6 +7,8 @@ package com.tongwan.common.net;
  * @date 2014年1月18日
  */
 public class ResultObject<T> {
+	/** 模块号 */
+	private int module;
 	/** 指令号 */
 	private int cmd;
 	/** 返回状态 */
@@ -14,8 +16,9 @@ public class ResultObject<T> {
 	/** 返回值*/
 	private T value;
 	
-	public static ResultObject valueOf(int cmd){
+	public static ResultObject valueOf(int module,int cmd){
 		ResultObject resultObject = new ResultObject();
+		resultObject.module=module;
 		resultObject.cmd=cmd;
 		return resultObject;
 	}
@@ -36,6 +39,12 @@ public class ResultObject<T> {
 	}
 	public void setCmd(int cmd) {
 		this.cmd = cmd;
+	}
+	public int getModule() {
+		return module;
+	}
+	public void setModule(int module) {
+		this.module = module;
 	}
 	
 }

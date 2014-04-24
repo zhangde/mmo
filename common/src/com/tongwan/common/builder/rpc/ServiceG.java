@@ -3,11 +3,13 @@
  */
 package com.tongwan.common.builder.rpc;
 
-import static com.tongwan.common.lang.TypeX.*;
+import static com.tongwan.common.lang.TypeX.isBoolean;
 import static com.tongwan.common.lang.TypeX.isDouble;
 import static com.tongwan.common.lang.TypeX.isInt;
+import static com.tongwan.common.lang.TypeX.isIntArray;
 import static com.tongwan.common.lang.TypeX.isList;
 import static com.tongwan.common.lang.TypeX.isLong;
+import static com.tongwan.common.lang.TypeX.isObjectArray;
 import static com.tongwan.common.lang.TypeX.isString;
 
 import java.io.File;
@@ -18,8 +20,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.tongwan.common.net.ResultObject;
 
 /**
  * @author zhangde
@@ -41,10 +41,10 @@ public class ServiceG {
 		public int level;
 	}
 	interface RpcInterface{
-		@RpcMethodTag(cmd=1,params={"name","password"},remark="登陆")
-		public ResultObject<UserVO> login(String name,String password);
-		@RpcMethodTag(cmd=2,params={"name"},remark="封号")
-		public ResultObject<UserVO> closeUser(String name);
+//		@RpcMethodTag(cmd=1,push=false,params={"name","password"},remark="登陆")
+//		public ResultObject<UserVO> login(String name,String password);
+//		@RpcMethodTag(cmd=2,push=false,params={"name"},remark="封号")
+//		public ResultObject<UserVO> closeUser(String name);
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -133,19 +133,30 @@ public class ServiceG {
 		l(sb,"		int sn=in.readInt();  //指令序号");
 		l(sb,"		switch(cmd){");
 		for(RpcMethod m:methods){
-			l(sb,"			case %s :{",m.getTag().cmd());
-			l(sb,"				_%s(channel,in,sn);",m.getM().getName());
-			l(sb,"				return;");
-			l(sb,"			}");
+			if(m.getTransportMode()!=RPCTMode.ONLY_PUSH){
+				l(sb,"			case %s :{",m.getTag().cmd());
+				l(sb,"				_%s(channel,in,sn);",m.getM().getName());
+				l(sb,"				return;");
+				l(sb,"			}");
+			}
 		}
 		l(sb,"		}");
 		l(sb,"		throw new RuntimeException(\" cmd: \" + cmd + \" not found processor.\");");
 		l(sb,"	}");
 		for(RpcMethod m:methods){
-			l(sb,m.toInner());
+			if(m.getTransportMode()!=RPCTMode.ONLY_PUSH){
+				l(sb,m.toInner(module));
+			}
 		}
 		for(RpcMethod m:methods){
-			l(sb,m.toAbstract());
+			if(m.getTransportMode()!=RPCTMode.ONLY_PUSH){
+				l(sb,m.toAbstract());
+			}
+		}
+		for(RpcMethod m:methods){
+			if(m.getTransportMode()==RPCTMode.ONLY_PUSH || m.getTransportMode()==RPCTMode.SEND_RETURN_PUSH){
+				l(sb,m.toPush(module));
+			}
 		}
 		
 //		l(sb,"}");
@@ -194,10 +205,13 @@ public class ServiceG {
 		l(sb,"		int cmd=in.readInt();");
 		l(sb,"		switch(cmd){");
 		for(RpcMethod m:methods){
-			l(sb,"			case %s :{",m.getTag().cmd());
-			l(sb,"				_%s(in,sn);",m.getM().getName());
-			l(sb,"				return;");
-			l(sb,"			}");
+			if(!m.getReturnType2().equals("void")){
+				l(sb,"			case %s :{",m.getTag().cmd());
+				l(sb,"				_%s(in,sn);",m.getM().getName());
+				l(sb,"				return;");
+				l(sb,"			}");
+			}
+			
 		}
 		l(sb,"		}");
 		l(sb,"	}");
@@ -244,23 +258,31 @@ public class ServiceG {
 		l(sb,"		int cmd=input.readInt();");
 		l(sb,"		switch(cmd){");
 		for(RpcMethod m:methods){
-			l(sb,"			case %s :{",m.getTag().cmd());
-			l(sb,"				_%s(input,sn);",m.getM().getName());
-			l(sb,"				return;");
-			l(sb,"			}");
+			if(!m.getReturnType2().equals("void")){
+				l(sb,"			case %s :{",m.getTag().cmd());
+				l(sb,"				_%s(input,sn);",m.getM().getName());
+				l(sb,"				return;");
+				l(sb,"			}");
+			}
 		}
 		l(sb,"		}");
 		l(sb,"	}");
 		//请求方法
 		for(RpcMethod m:methods){
-			l(sb,m.toClient4CSharp(module));
+			if(m.getTransportMode()!=RPCTMode.ONLY_PUSH){
+				l(sb,m.toClient4CSharp(module));
+			}
 		}
 		//内部解析数据格式方法
 		for(RpcMethod m:methods){
-			l(sb,m.toCSharpClientInner());
+			if(m.getTransportMode()!=RPCTMode.ONLY_SEND){
+				l(sb,m.toCSharpClientInner());
+			}
 		}
 		for(RpcMethod m:methods){
-			l(sb,m.toCSharpClientAbstract());
+			if(m.getTransportMode()!=RPCTMode.ONLY_SEND){
+				l(sb,m.toCSharpClientAbstract());
+			}
 		}
 		l(sb,"}");
 		String path=pg.replaceAll("[.]","/");

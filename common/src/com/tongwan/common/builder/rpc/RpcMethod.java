@@ -3,12 +3,15 @@
  */
 package com.tongwan.common.builder.rpc;
 
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.tongwan.common.net.ResultObject;
 
 import static com.tongwan.common.builder.rpc.ServiceG.l;
 import static com.tongwan.common.builder.rpc.ServiceG.a;
@@ -38,6 +41,9 @@ public class RpcMethod {
 	public Type[] getParameterTypes() {
 		return parameterTypes;
 	}
+	public RPCTMode getTransportMode(){
+		return tag.mode();
+	}
 	public String getReturnType(){
 		Type returnType=m.getGenericReturnType();
 		if(returnType instanceof ParameterizedType){
@@ -48,7 +54,7 @@ public class RpcMethod {
 		        return "ResultObject<"+typeArgClass.getSimpleName()+">";
 		    }
 		}
-		return "";
+		return "void";
 	}
 	public String getReturnType2(){
 		Type returnType=m.getGenericReturnType();
@@ -60,7 +66,7 @@ public class RpcMethod {
 		        return typeArgClass.getSimpleName();
 		    }
 		}
-		return "";
+		return "void";
 	}
 	public String toClient4Java(){
 		StringBuffer sb=new StringBuffer();
@@ -151,7 +157,7 @@ public class RpcMethod {
 		return sb.toString();
 	}
 	
-	public String toInner(){
+	public String toInner(int module){
 		StringBuffer sb=new StringBuffer();
 		sb.append("	public void _").append(m.getName()).append("(BaseChannel channel,RpcInput in,int sn) throws Exception{\r\n");
 		for(int i=0;i<parameterAnnotations.length;i++){
@@ -184,22 +190,54 @@ public class RpcMethod {
 		}
 		
 		//方法返回值类型
-		a(sb,"		%s result=%s(",getReturnType(),m.getName());
-		if(tag.params().length>0){
-			for(String s:tag.params()){
-				sb.append(s).append(",");
+		String returnType=getReturnType();
+		if(returnType.equals("void")){
+			a(sb,"		%s(",m.getName());
+			if(tag.params().length>0){
+				for(String s:tag.params()){
+					sb.append(s).append(",");
+				}
+				sb.delete(sb.length()-1, sb.length());
+				
 			}
-			sb.delete(sb.length()-1, sb.length());
-			
+			sb.append(");\r\n");
+		}else{
+			a(sb,"		%s result=%s(",returnType,m.getName());
+			if(tag.params().length>0){
+				for(String s:tag.params()){
+					sb.append(s).append(",");
+				}
+				sb.delete(sb.length()-1, sb.length());
+				
+			}
+			sb.append(");\r\n");
+			l(sb,"		result.setModule(%d);",module);
+			l(sb,"		result.setCmd(%s);",getTag().cmd());
+			l(sb,"		channel.writeResultObject(result);");
 		}
-		sb.append(");\r\n");
-		l(sb,"		result.setCmd(%s);",getTag().cmd());
-		l(sb,"		channel.writeResultObject(result);");
 		sb.append("	}");
+		return sb.toString();
+	}
+	/**
+	 * 主动推送结构
+	 * @return
+	 */
+	public String toPush(int module){
+		StringBuffer sb=new StringBuffer();
+		l(sb,"	/**");
+		l(sb,"	* 得到%s(主动推送的结构)",tag.remark());
+		l(sb,"	*/");
+		l(sb,"	public static %s Get%sResultObject(){",getReturnType(),m.getName());
+		l(sb,"		%s result=ResultObject.valueOf(%d,%d);",getReturnType(), module,tag.cmd());
+		l(sb,"		return result;");
+		l(sb,"	}");
 		return sb.toString();
 	}
 	public String toJavaClientInner(){
 		String returnType=getReturnType2();
+		if(returnType.equals("void")){
+			return "";
+		}
 		StringBuffer sb=new StringBuffer();
 		sb.append("	private void _").append(m.getName()).append("(RpcInput in,int sn) throws Exception{\r\n");
 		l(sb,"		int state=in.readInt();");
@@ -217,6 +255,9 @@ public class RpcMethod {
 	}
 	public String toCSharpClientInner(){
 		String returnType=getReturnType2();
+		if(returnType.equals("void")){
+			return "";
+		}
 		StringBuffer sb=new StringBuffer();
 		sb.append("	private void _").append(m.getName()).append("(RpcInput input,int sn){\r\n");
 		l(sb,"		int state=input.readInt();");
@@ -233,24 +274,31 @@ public class RpcMethod {
 		return sb.toString();
 	}
 	public String toJavaClientAbstract(){
+		String returnType=getReturnType2();
+		if(returnType.equals("void")){
+			return "";
+		}
 		StringBuffer sb=new StringBuffer();
-		l(sb,"	public abstract void %sCallback(int state,%s result)throws Exception;",m.getName(),getReturnType2());
+		l(sb,"	public abstract void %sCallback(int state,%s result)throws Exception;",m.getName(),returnType);
 		return sb.toString();
 	}
 	public String toCSharpClientAbstract(){
 		StringBuffer sb=new StringBuffer();
 		String type= getReturnType2();
+		if(type.equals("void")){
+			return "";
+		}
 		if(type.equals("byte[][]")){
-			l(sb,"	public abstract void %sCallback(int state,%s result);",m.getName(),type);
+			l(sb,"	protected abstract void %sCallback(int state,%s result);",m.getName(),type);
 		}else{
-			l(sb,"	public abstract void %sCallback(int state,Vos.%s result);",m.getName(),type);
+			l(sb,"	protected abstract void %sCallback(int state,Vos.%s result);",m.getName(),type);
 		}
 		
 		return sb.toString();
 	}
 	public String toAbstract(){
 		StringBuffer sb=new StringBuffer();
-		sb.append("	public abstract "+getReturnType()+" ").append(m.getName()).append("(");
+		sb.append("	protected abstract "+getReturnType()+" ").append(m.getName()).append("(");
 		for(int i=0;i<parameterTypes.length;i++){
 			String t=parameterTypes[i].toString();
 			t=t.substring(t.lastIndexOf(".")+1);
